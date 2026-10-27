@@ -1,0 +1,1381 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>SUNPRIDE 蝴蝶蘭配貨台</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap">
+<style>
+html,body{margin:0}
+:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+img{max-width:100%}
+/* Layout: one-screen spreadsheet workbench — top bar, week strip, toolbar, grid (left + bottom sliders) beside a collapsible info rail */
+:root{
+  --bg:#f3f5f3; --surface:#ffffff; --ink:#1b2220; --muted:#5f6a66; --line:#dde2df; --line2:#bcc5c1;
+  --accent:#7b2d6c; --accent-soft:#f4e7f1; --accent-ink:#ffffff;
+  --supply:#fff3bf; --remain:#e5f1e2; --sub:#eef1ef; --sec:#f7f3e8;
+  --neg:#c3261f; --neg-bg:#fde7e5; --warn:#a85a00; --warn-bg:#ffe6c4; --ok:#2e7d32;
+  --sel:#7b2d6c; --std:#1d5f8a;
+  --f-ui:"Noto Sans TC",system-ui,-apple-system,"PingFang TC","Microsoft JhengHei",sans-serif;
+  --f-num:"Barlow Semi Condensed","Noto Sans TC",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#111413; --surface:#191d1b; --ink:#e4e9e6; --muted:#9aa49f; --line:#2b322f; --line2:#3e4743;
+  --accent:#d38cc3; --accent-soft:#3a2234; --accent-ink:#1b0f18;
+  --supply:#3a3416; --remain:#1c2d1d; --sub:#1f2523; --sec:#262219;
+  --neg:#ff7a70; --neg-bg:#3e1d1a; --warn:#ffb459; --warn-bg:#43301a; --ok:#7bc97f; --sel:#d38cc3; --std:#86c0e8; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#111413; --surface:#191d1b; --ink:#e4e9e6; --muted:#9aa49f; --line:#2b322f; --line2:#3e4743;
+  --accent:#d38cc3; --accent-soft:#3a2234; --accent-ink:#1b0f18;
+  --supply:#3a3416; --remain:#1c2d1d; --sub:#1f2523; --sec:#262219;
+  --neg:#ff7a70; --neg-bg:#3e1d1a; --warn:#ffb459; --warn-bg:#43301a; --ok:#7bc97f; --sel:#d38cc3; --std:#86c0e8; color-scheme:dark}
+[hidden]{display:none!important}
+*,*::before,*::after{box-sizing:border-box}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-ui);font-size:13px;display:flex;flex-direction:column;overflow:hidden}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+button,select,input{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--sel);outline-offset:1px}
+.pad{padding-left:max(12px,env(safe-area-inset-left,0px));padding-right:max(12px,env(safe-area-inset-right,0px))}
+/* top bar */
+.top{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--surface);border-bottom:1px solid var(--line);padding-block:6px}
+.brand{font-family:var(--f-num);font-weight:700;letter-spacing:.08em;font-size:13px;color:var(--accent);white-space:nowrap}
+.brand b{font-family:var(--f-ui);letter-spacing:0;color:var(--ink);font-weight:700;margin-left:4px}
+.tabs{display:flex;gap:2px;max-width:100%;overflow-x:auto;scrollbar-width:none;background:var(--bg);border:1px solid var(--line);border-radius:7px;padding:2px}
+.tabs button{border:0;background:transparent;padding:4px 10px;border-radius:5px;white-space:nowrap}
+.tabs button[aria-pressed="true"]{background:var(--surface);box-shadow:0 0 0 1px var(--line2);font-weight:700}
+.badge{display:inline-block;min-width:16px;padding:0 4px;border-radius:8px;background:var(--neg);color:#fff;font-size:10px;line-height:16px;text-align:center;margin-left:3px;font-family:var(--f-num)}
+.top-r{margin-left:auto;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.save{font-size:11px;color:var(--muted);white-space:nowrap}
+.save.ok::before{content:"● ";color:var(--ok)}
+.btn{border:1px solid var(--line2);background:var(--surface);border-radius:6px;padding:3px 9px;white-space:nowrap;line-height:1.4}
+.btn:hover{border-color:var(--accent)}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:700}
+.btn.sm{padding:1px 6px;font-size:11px}
+select.sel{border:1px solid var(--line2);background:var(--surface);border-radius:6px;padding:3px 4px}
+/* week strip */
+.weekbar{display:flex;align-items:center;gap:8px;background:var(--surface);border-bottom:1px solid var(--line);padding-block:5px}
+.weeks{display:flex;gap:4px;overflow-x:auto;scrollbar-width:thin;flex:1;min-width:0;padding-bottom:3px}
+.wk{flex:0 0 auto;border:1px solid var(--line);background:var(--surface);border-radius:6px;padding:2px 9px;text-align:left;line-height:1.25}
+.wk b{font-family:var(--f-num);font-size:14px;display:block}
+.wk small{color:var(--muted);font-size:10px;font-family:var(--f-num)}
+.wk.sug{background:var(--accent-soft)}
+.wk.cur{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.wk.cur small{color:inherit;opacity:.85}
+.wk i{font-style:normal;font-size:9px;display:block;color:inherit;opacity:.8}
+.wkjump{width:92px;border:1px solid var(--line2);border-radius:6px;padding:3px 6px;background:var(--surface);font-family:var(--f-num)}
+/* views */
+.view{flex:1;min-height:0;display:flex;flex-direction:column}
+.toolbar{display:flex;align-items:center;gap:6px 12px;flex-wrap:wrap;padding-block:6px;border-bottom:1px solid var(--line);background:var(--bg)}
+.tg{display:flex;align-items:center;gap:4px;white-space:nowrap}
+.tg label{display:flex;align-items:center;gap:3px;cursor:pointer}
+.zoomr{width:110px;accent-color:var(--accent)}
+.zv{font-family:var(--f-num);min-width:36px;text-align:right}
+.q{border:1px solid var(--line2);border-radius:6px;padding:3px 7px;width:130px;background:var(--surface)}
+.chip{font-size:11px;border:1px dashed var(--line2);border-radius:10px;padding:1px 8px;background:transparent}
+.work{flex:1;min-height:0;display:flex}
+.gridwrap{flex:1;min-width:0;display:grid;grid-template-columns:20px minmax(0,1fr);grid-template-rows:minmax(0,1fr) 20px;background:var(--surface)}
+.scroller{overflow:auto;position:relative;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+/* custom sliders */
+.vs,.hs{position:relative;background:var(--bg);touch-action:none;user-select:none}
+.vs{border-right:1px solid var(--line)}
+.hs{grid-column:2;border-top:1px solid var(--line)}
+.corner{background:var(--bg);border-top:1px solid var(--line);border-right:1px solid var(--line)}
+.thumb{position:absolute;background:var(--line2);border-radius:6px;cursor:grab}
+.vs .thumb{left:4px;right:4px;min-height:28px}
+.hs .thumb{top:4px;bottom:4px;min-width:28px}
+.thumb:hover,.thumb.drag{background:var(--accent)}
+/* grid */
+table.g{border-collapse:separate;border-spacing:0;table-layout:fixed;font-size:calc(12.5px*var(--z));width:max-content}
+.g th,.g td{border-right:1px solid var(--line);border-bottom:1px solid var(--line);height:var(--rh);padding:0;background:var(--surface);overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.g thead th{background:var(--sub);font-weight:500}
+.g .lt{height:calc(var(--rh)*.78);font-size:.82em;color:var(--muted);text-align:center;position:relative;cursor:default;user-select:none;font-family:var(--f-num)}
+.g .lt.mv{background:var(--accent-soft);color:var(--ink)}
+.g .gut{color:var(--muted);text-align:center;font-family:var(--f-num);font-size:.8em;user-select:none;background:var(--sub)}
+.g .lab{padding:0 6px;text-align:left;font-weight:500}
+.g .lab small{color:var(--muted);font-weight:400;margin-left:4px}
+.g input{width:100%;height:100%;border:0;background:transparent;padding:0 5px;outline:none;font-family:var(--f-num);font-size:inherit;font-variant-numeric:tabular-nums}
+.g input.n{text-align:right}
+.g input.t{font-family:var(--f-ui);text-align:left}
+.g input.code{text-align:center;font-weight:700;font-size:1.05em}
+.g input.var{text-align:center;color:var(--muted);font-size:.92em}
+.g td:focus-within,.g th:focus-within{box-shadow:inset 0 0 0 2px var(--sel)}
+.g td.ro{font-family:var(--f-num);text-align:right;padding:0 5px;font-variant-numeric:tabular-nums}
+.g .sup td,.g .sup th{background:var(--supply)}
+.g .rem td,.g .rem th{background:var(--remain);font-weight:600}
+.g .pr td,.g .pr th{background:var(--sec);color:var(--muted)}
+.g .grp td,.g .grp th{background:var(--sub);font-weight:600}
+.g .grp .lab{cursor:pointer}
+.g .sec td,.g .sec th{background:var(--sec)}
+.g .sech th{background:var(--sec);text-align:left;padding:0 6px;font-weight:700;font-size:.9em;letter-spacing:.04em;color:var(--muted)}
+.g .neg{color:var(--neg)!important}
+.g td.neg,.g td.ro.neg{background:var(--neg-bg)!important}
+.g td.alarm{background:var(--neg)!important;color:#fff!important;font-weight:700}
+.g td.alarm::after{content:" !"}
+.g .over input{color:var(--neg)}
+.g .cdem{color:var(--accent);font-weight:600}
+.g .cdem small{color:var(--muted);font-weight:400}
+.g th.act{box-shadow:inset 0 -3px 0 var(--accent)}
+.g tr.actrow th.gut{background:var(--accent);color:var(--accent-ink)}
+.g .unk{color:var(--muted);font-style:italic}
+.g .rz{position:absolute;right:-3px;top:0;bottom:0;width:7px;cursor:col-resize;z-index:2;touch-action:none}
+.g .rz:hover{background:var(--accent);opacity:.4}
+.g .mvb{display:inline-flex;gap:1px}
+.g .mvb button{border:1px solid var(--line2);background:var(--surface);border-radius:3px;padding:0 3px;font-size:.85em;line-height:1.2}
+.g .addb{border:0;background:transparent;color:var(--accent);font-weight:700;padding:0 4px}
+.g select.rg{width:100%;height:100%;border:0;background:transparent;font-size:inherit;padding:0 2px}
+.g.fz-top thead th,.g.fz-top thead td{position:sticky;z-index:3}
+.g .sl{position:sticky;z-index:2}
+.g thead .sl,.g.fz-top thead .sl{z-index:6}
+.g td.anyc{background:var(--bg);font-style:italic;cursor:default}
+.g td.anyc.under{color:var(--warn);font-weight:600}
+.g th.anyh{background:var(--accent-soft)}
+.g th.anyh .avar{color:var(--warn);font-size:.92em;font-weight:500}
+.g.noA .cA{border-right:0;visibility:hidden}
+.g td.auto input{color:var(--std);font-style:italic}
+.g td.ovr{background-image:linear-gradient(135deg,var(--warn) 0 6px,transparent 6px)}
+.g td.stdc input{color:var(--std);font-weight:500}
+.lg{display:inline-block;font-family:var(--f-num);padding:0 6px;margin:0 3px 0 8px;border:1px solid var(--line);background:var(--surface)}
+.lg.auto{color:var(--std);font-style:italic}
+.lg.ovr{background-image:linear-gradient(135deg,var(--warn) 0 6px,transparent 6px)}
+.legend{font-size:11px;color:var(--muted);white-space:nowrap}
+.who{font-weight:700;font-size:12px;border:1px solid var(--line2);border-radius:6px;padding:2px 8px}
+table.std td{padding:3px 4px}
+table.std select,table.std input{border:1px solid var(--line2);border-radius:5px;padding:3px 5px;background:var(--surface);font-size:12.5px;max-width:190px}
+table.std input.num{width:64px;text-align:right;font-family:var(--f-num)}
+table.std input.wkin{width:60px;font-family:var(--f-num)}
+table.std .mvc{white-space:nowrap}
+input.lnk{width:100%;min-width:220px;border:1px solid var(--line2);border-radius:5px;padding:4px 6px;background:var(--bg);font-family:var(--f-num);font-size:12px;color:var(--ink)}
+.btn.dis{opacity:.45;pointer-events:none}
+.g .tag{font-size:.75em;color:var(--warn);margin-left:3px}
+/* info rail */
+.info{width:300px;flex:0 0 300px;border-left:1px solid var(--line);background:var(--surface);overflow:auto;padding:10px 12px;display:flex;flex-direction:column;gap:10px}
+.info[data-collapsed="true"]{width:34px;flex-basis:34px;padding:8px 4px}
+.info[data-collapsed="true"] .ib{display:none}
+.ih{display:flex;align-items:flex-start;gap:6px}
+.ih h2{font-family:var(--f-num);font-size:22px;margin:0;line-height:1}
+.ih p{margin:2px 0 0;color:var(--muted);font-size:12px}
+.ih .btn{margin-left:auto}
+.kp{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.kp div{border:1px solid var(--line);border-radius:6px;padding:4px 6px}
+.kp span{display:block;font-size:10px;color:var(--muted)}
+.kp b{font-family:var(--f-num);font-size:17px;font-variant-numeric:tabular-nums}
+.alert{border-radius:6px;padding:6px 8px;background:var(--neg-bg);color:var(--neg);font-weight:600;font-size:12px}
+.note{color:var(--muted);font-size:11px;line-height:1.5}
+table.mini{width:100%;border-collapse:collapse;font-size:12px}
+.mini th{font-weight:500;color:var(--muted);text-align:right;padding:3px 4px;border-bottom:1px solid var(--line2);font-size:11px}
+.mini th:first-child,.mini td:first-child{text-align:left}
+.mini td{padding:3px 4px;border-bottom:1px solid var(--line);text-align:right;font-family:var(--f-num);font-variant-numeric:tabular-nums}
+.mini td:first-child{font-family:var(--f-ui)}
+.mini tr.hl td{background:var(--accent-soft)}
+.mini .any{font-size:10px;color:var(--warn);margin-left:3px}
+.info h3{margin:0;font-size:12px;color:var(--muted);font-weight:500;letter-spacing:.05em}
+/* import panel */
+.imp{border-bottom:1px solid var(--line);background:var(--sec);padding-block:8px;display:flex;flex-direction:column;gap:6px;max-height:45vh;overflow:auto}
+.imp .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.imp table{border-collapse:collapse;font-size:12px;background:var(--surface)}
+.imp th,.imp td{border:1px solid var(--line);padding:2px 6px;text-align:right;font-family:var(--f-num);white-space:nowrap}
+.imp td:nth-child(-n+2),.imp th:nth-child(-n+2){text-align:left}
+.up{color:var(--ok)} .dn{color:var(--neg)}
+.prog{font-size:12px;color:var(--muted)}
+/* pending + request views */
+.page{flex:1;overflow:auto;padding-block:12px}
+.page-in{max-width:1100px;margin:0 auto;display:flex;flex-direction:column;gap:12px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 12px;min-width:0}
+.panel h2{margin:0 0 8px;font-size:15px}
+.tblx{overflow-x:auto}
+table.list{border-collapse:collapse;width:100%;font-size:12.5px}
+.list th{text-align:left;font-weight:500;color:var(--muted);border-bottom:1px solid var(--line2);padding:5px 6px;white-space:nowrap;font-size:11.5px}
+.list td{border-bottom:1px solid var(--line);padding:4px 6px;white-space:nowrap}
+.list td.n,.list th.n{text-align:right;font-family:var(--f-num);font-variant-numeric:tabular-nums}
+.list tr.click{cursor:pointer}
+.list tr.click:hover td{background:var(--accent-soft)}
+.st{font-size:11px;border-radius:9px;padding:1px 7px;border:1px solid var(--line2);white-space:nowrap}
+.st.wait{border-color:var(--warn);color:var(--warn)}
+.st.part{background:var(--warn-bg);border-color:transparent;color:var(--warn)}
+.st.done{border-color:var(--ok);color:var(--ok)}
+.st.map{background:var(--neg-bg);color:var(--neg);border-color:transparent}
+.filters{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:8px}
+.ntc{display:flex;flex-direction:column;gap:4px;font-size:12.5px}
+.ntc div{border-left:3px solid var(--warn);padding:3px 8px;background:var(--bg)}
+.ntc time{color:var(--muted);font-family:var(--f-num);margin-right:6px}
+.form{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+.form label{display:flex;flex-direction:column;gap:2px;font-size:11.5px;color:var(--muted)}
+.form input,.form select{border:1px solid var(--line2);border-radius:6px;padding:5px 7px;background:var(--surface);font-size:13px;color:var(--ink)}
+.form .wkout{font-family:var(--f-num);font-size:13px;color:var(--ink);padding:5px 0}
+table.req{border-collapse:collapse;width:100%;font-size:13px}
+.req th{position:sticky;top:0;background:var(--sub);font-weight:500;font-size:11.5px;color:var(--muted);text-align:left;padding:5px 6px;z-index:1}
+.req td{border-bottom:1px solid var(--line);padding:0 6px;height:32px}
+.req td.code{font-family:var(--f-num);font-weight:700;font-size:14px}
+.req td.vr{color:var(--muted);font-size:12px}
+.req td.gr{font-family:var(--f-num);color:var(--muted);font-size:12px}
+.req input.qty{width:76px;text-align:right;border:1px solid var(--line2);border-radius:5px;padding:4px 6px;font-family:var(--f-num);font-size:15px;background:var(--surface)}
+.req input.qty:not(:placeholder-shown){border-color:var(--accent);background:var(--accent-soft)}
+.req input.tx{width:100%;min-width:70px;border:1px solid var(--line2);border-radius:5px;padding:4px 6px;background:var(--surface)}
+.req td.rp{font-family:var(--f-num);text-align:right}
+.req tr.fx td.code::after{content:"固定";font-size:9px;color:var(--muted);font-weight:400;margin-left:4px;font-family:var(--f-ui)}
+.req tr.anyrow td.vr{color:var(--warn)}
+.reqbar{position:sticky;bottom:0;display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--surface);border-top:1px solid var(--line2);padding:8px 0 calc(8px + env(safe-area-inset-bottom,0px))}
+.reqbar b{font-family:var(--f-num);font-size:16px}
+.tickets{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px}
+.tk{flex:0 0 auto;border:1px solid var(--line);border-radius:7px;padding:6px 9px;background:var(--surface);text-align:left;min-width:150px}
+.tk b{display:block}
+.tk small{color:var(--muted);font-family:var(--f-num)}
+.tk.on{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.hint{font-size:12px;color:var(--warn);background:var(--warn-bg);border-radius:6px;padding:5px 8px}
+.drop{border:1px dashed var(--line2);border-radius:7px;padding:8px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;font-size:12px;color:var(--muted)}
+.drop img{height:54px;border-radius:4px;border:1px solid var(--line)}
+/* pin */
+.pin{position:fixed;inset:0;background:color-mix(in srgb,var(--bg) 92%,transparent);display:flex;align-items:center;justify-content:center;z-index:50;padding:16px}
+.pin form{background:var(--surface);border:1px solid var(--line2);border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:10px;width:min(300px,100%)}
+.pin input{font-family:var(--f-num);font-size:22px;letter-spacing:.4em;text-align:center;border:1px solid var(--line2);border-radius:6px;padding:6px;background:var(--surface)}
+.toast{position:fixed;left:50%;bottom:calc(36px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);border-radius:8px;padding:7px 12px;font-size:12.5px;z-index:60;display:flex;gap:10px;align-items:center;max-width:calc(100% - 32px)}
+.toast button{background:transparent;border:1px solid currentColor;color:inherit;border-radius:5px;padding:1px 7px}
+.proto{font-size:10.5px;color:var(--muted)}
+@media (max-width:900px){
+  .work{flex-direction:column}
+  .info{width:auto;flex:0 0 auto;max-height:42vh;border-left:0;border-top:1px solid var(--line)}
+  .info[data-collapsed="true"]{width:auto;flex-basis:auto;max-height:34px;padding:6px 12px}
+  .gridwrap{min-height:300px}
+}
+@media (max-width:560px){
+  .brand b{display:none}
+  .q{width:100px}
+  .zoomr{width:80px}
+  .tg.opt{display:none}
+  .toolbar.open .tg.opt{display:flex}
+}
+@media (min-width:561px){ #moreBtn{display:none} }
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+
+
+<header class="top pad">
+  <div class="brand">SUNPRIDE<b>蝴蝶蘭配貨台</b></div>
+  <nav class="tabs" id="tabs"></nav>
+  <div class="top-r">
+    <span class="save" id="save"></span>
+    <span class="who" id="whoChip" hidden></span><select class="sel" id="persona" aria-label="視角" hidden></select>
+    <button class="btn sm" id="langBtn" type="button">EN</button>
+  </div>
+</header>
+<div class="weekbar pad">
+  <div class="weeks" id="weeks"></div>
+  <input class="wkjump" id="wkjump" placeholder="2026-W50" aria-label="輸入週次">
+</div>
+
+<section class="view" id="vGrid">
+  <div class="toolbar pad" id="toolbar">
+    <div class="tg"><button class="btn sm" id="zOut" type="button" aria-label="縮小">−</button><input type="range" class="zoomr" id="zoom" min="60" max="150" step="5" aria-label="縮放"><button class="btn sm" id="zIn" type="button" aria-label="放大">＋</button><span class="zv" id="zv"></span></div>
+    <div class="tg"><input class="q" id="q" type="search" placeholder="篩選花色/品種"><button class="btn sm" id="moreBtn" type="button">⋯</button></div>
+    <div class="tg opt"><label><input type="checkbox" id="fZero"><span data-t="hideZero"></span></label><label><input type="checkbox" id="fNeg"><span data-t="hideNeg"></span></label><label><input type="checkbox" id="fEmpty"><span data-t="hideEmpty"></span></label></div>
+    <div class="tg opt"><span data-t="owner"></span><select class="sel" id="fOwner"></select></div>
+    <div class="tg opt"><label><input type="checkbox" id="fzTop"><span data-t="fzTop"></span></label><label><input type="checkbox" id="fzLeft"><span data-t="fzLeft"></span></label></div>
+    <div class="tg"><span id="hiddenChip"></span></div><div class="tg opt legend" id="legend"></div>
+    <div class="tg" style="margin-left:auto"><button class="btn" id="upBtn" type="button" data-t="upload"></button><input type="file" id="upFile" accept=".xlsx,.xls" hidden></div>
+  </div>
+  <div class="imp pad" id="imp" hidden></div>
+  <div class="work">
+    <div class="gridwrap">
+      <div class="vs" id="vs"><div class="thumb"></div></div>
+      <div class="scroller" id="scroller"><table class="g" id="grid"></table></div>
+      <div class="corner"></div>
+      <div class="hs" id="hs"><div class="thumb"></div></div>
+    </div>
+    <aside class="info" id="info"></aside>
+  </div>
+</section>
+
+<section class="view" id="vPending" hidden><div class="page pad"><div class="page-in" id="pendingIn"></div></div></section>
+<section class="view" id="vStd" hidden><div class="page pad"><div class="page-in" id="stdIn" style="max-width:1300px"></div></div></section>
+<section class="view" id="vLinks" hidden><div class="page pad"><div class="page-in" id="linksIn"></div></div></section>
+<section class="view" id="vSetup" hidden><div class="page pad"><div class="page-in" id="setupIn" style="max-width:640px"></div></div></section>
+<section class="view" id="vReq" hidden><div class="page pad"><div class="page-in" id="reqIn"></div></div></section>
+
+<div class="pin" id="pin" hidden>
+  <form id="pinForm"><b data-t="pinTitle"></b><span class="note" data-t="pinNote"></span><input id="pinIn" type="password" inputmode="numeric" maxlength="6" autocomplete="off" aria-label="PIN"><button class="btn pri" type="submit" data-t="enter"></button><span class="note" id="pinErr"></span></form>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+/* ===== Apollo 預估表解析（F溫室色花出貨預估） ===== */
+const VAR_ALIAS = {
+  '0953':'SRM0953','0950':'SRM0950','1142':'SRM1142','SRM615':'SRM0615','615':'SRM0615',
+  'JINJU':'Jinju','TEM079':'TEM079','TEM0079':'TEM079','1306-3':'L1306-3','HAPPY':'Happy Dancer',
+  'HAPPY DANCER':'Happy Dancer',"FULLER'S":"Fuller's Sunset","FULLER'S SUNSET":"Fuller's Sunset",
+  'FULLER':"Fuller's Sunset",'FULLER SUNSET':"Fuller's Sunset",'3E+43':'3E-43','DS2':'DS2 (SRM0665)',
+  'CL234':'CL243','KV5701':'KV5701'
+};
+const CODE_AS_VARIETY = { 'SRM0665':['PUR','DS2 (SRM0665)'], 'SRM0615':['PUR','SRM0615'], 'SRM1387':['PUR','SRM1387'] };
+function normVariety(v){
+  if (v==null) return '';
+  let s = String(v).replace(/\s+/g,' ').trim();
+  const k = s.toUpperCase();
+  return VAR_ALIAS[k] || s;
+}
+function normalizeProduct(rawCode, rawVar){
+  let code = String(rawCode).replace(/\s+/g,' ').trim();
+  if (CODE_AS_VARIETY[code.toUpperCase()]) { const [c,v]=CODE_AS_VARIETY[code.toUpperCase()]; return {code:c, variety:v}; }
+  let variety = normVariety(rawVar);
+  if (/^\d+$/.test(code) && !variety) variety = code;
+  if (!variety) variety = 'Any';
+  return { code, variety };
+}
+function cellNum(v){
+  if (v==null) return 0;                 // 已收到的報表：空白視 0
+  if (typeof v==='number') return v;
+  const s=String(v).trim();
+  if (s===''||/^[-–—]+$/.test(s)) return 0; // 橫線視 0
+  const n=parseFloat(s.replace(/,/g,'')); return isNaN(n)?0:n;
+}
+/* rows: sheet_to_json(header:1) 二維陣列；anchor: 例如 'W44'（不給則取第一個週列） */
+function parseApollo(rows, anchor){
+  const acc = {}, weeksFound = [];
+  for (let r=0;r<rows.length;r++){
+    const a = String((rows[r]||[])[0]??'').trim();
+    if (a.toLowerCase()!=='week') continue;
+    const head = rows[r]||[], vrow = rows[r+1]||[];
+    const info = {};
+    for (let k=r+2;k<rows.length;k++){
+      const lab = String((rows[k]||[])[0]??'').trim();
+      if (!lab) { if (Object.keys(info).length) break; else continue; }
+      if (lab.toLowerCase()==='week') break;
+      info[lab.toUpperCase()] = rows[k]||[];
+      if (/^W\d+$/i.test(lab) && !weeksFound.includes(lab.toUpperCase())) weeksFound.push(lab.toUpperCase());
+    }
+    const anc = (anchor || weeksFound[0] || '').toUpperCase();
+    const nxt = anc ? 'W'+(parseInt(anc.slice(1))%53+1) : '';
+    for (let c=1;c<head.length;c++){
+      const rc = head[c];
+      if (rc==null || String(rc).trim()==='') continue;
+      if (/採收|朵數|備註/.test(String(rc))) continue;
+      const {code, variety} = normalizeProduct(rc, vrow[c]);
+      const key = code+'|'+variety;
+      const o = acc[key] || (acc[key] = {key, code, variety, prod:null, stock:null, f6:null, next:null, src:[]});
+      const put = (f,row)=>{ if(!row) return; const v=cellNum(row[c]); o[f]=(o[f]||0)+v; };
+      put('stock', info['庫存']); put('f6', info['6F']); put('prod', info[anc]); put('next', info[nxt]);
+      o.src.push(String(rc)+(vrow[c]!=null?'/'+String(vrow[c]).replace(/\s+/g,' '):''));
+    }
+  }
+  const fl = x => x==null?null:Math.floor(x+1e-9); // 先加總後無條件捨去
+  const list = Object.values(acc).map(o=>({...o, prod:fl(o.prod), stock:fl(o.stock), f6:fl(o.f6), next:fl(o.next),
+    supplyRaw:(o.prod||0)+(o.stock||0)}));
+  list.forEach(o=>{ o.supply = (o.prod==null&&o.stock==null)?null:fl((o.supplyRaw)); delete o.supplyRaw; });
+  return { products:list, weeks:weeksFound };
+}
+
+
+</script>
+<script>
+"use strict";
+/* ================= constants ================= */
+const REGIONS=[
+ {id:'JP',zh:'日本',en:'Japan',owner:'Vita'},
+ {id:'MEA',zh:'中東(Amy)',en:'Middle East (Amy)',owner:'Amy',cust:'Black Tulip (DXB)'},
+ {id:'MES',zh:'中東(Sabina)',en:'Middle East (Sabina)',owner:'Sabina'},
+ {id:'EU',zh:'歐洲',en:'Europe',owner:'Sabina'},
+ {id:'AS',zh:'亞洲',en:'Asia',owner:'Joanne'},
+ {id:'AU',zh:'澳洲',en:'Australia',owner:'Fanny'},
+ {id:'US',zh:'美國',en:'USA',owner:'Teresa'},
+ {id:'HF',zh:'Hasfarm',en:'Hasfarm',owner:'Nguyen Tran',cust:'Hasfarm'},
+ {id:'VN',zh:'越南內銷',en:'Vietnam domestic',owner:'Nguyen Tran'},
+ {id:'OT',zh:'其他',en:'Other',owner:''}];
+const RG=Object.fromEntries(REGIONS.map(r=>[r.id,r]));
+const PEOPLE=[
+ {id:'sabina',name:'Sabina',regions:['MES','EU']},{id:'vita',name:'Vita',regions:['JP']},
+ {id:'amy',name:'Amy',regions:['MEA']},{id:'teresa',name:'Teresa',regions:['US']},
+ {id:'fanny',name:'Fanny',regions:['AU','US']},{id:'joanne',name:'Joanne',regions:['AS']},
+ {id:'emily',name:'Emily',regions:['VN']},{id:'nguyen',name:'Nguyen Tran',regions:['HF','VN'],en:true}];
+const PP=Object.fromEntries(PEOPLE.map(p=>[p.id,p]));
+const FIXED=[
+ {key:'W (A+)|SRM0533',code:'W (A+)',variety:'SRM0533',cat:'white',unit:'枝',grade:'9F+'},
+ {key:'W (Party B)|SRM0533',code:'W (Party B)',variety:'SRM0533',cat:'white',unit:'枝',grade:'Party'},
+ {key:'XXL-W|SRM0533',code:'XXL-W',variety:'SRM0533',cat:'high',unit:'箱',grade:'13–15F'},
+ {key:'XXL-LP|CL243',code:'XXL-LP',variety:'CL243',cat:'high',unit:'箱',grade:'13–15F'},
+ {key:'XL-W|SRM0533',code:'XL-W',variety:'SRM0533',cat:'high',unit:'箱',grade:'11–12F'},
+ {key:'XL-LP|CL243',code:'XL-LP',variety:'CL243',cat:'high',unit:'箱',grade:'11–12F'}];
+const ORDER=['W (A+)','W (Party B)','XXL-W','XL-W','XXL-LP','XL-LP','PUR','BL-PUR','LP','BL-LP','LPWL','B','P','SMP','FS','OYL','MD-YST','MD-T','MD-O','MD-BLOR','O','WST','BL-W','4775','LO','LY','CP','M-W','RRA','RRI'];
+const ANY_CODES=['PUR','LP','MD-T','MD-O','B'];
+const F6_QUICK=['AU','US','JP','VN'];
+const LS_KEY='sp-alloc-local-v2', UI_KEY='sp-alloc-ui-v2';
+/* ================= i18n ================= */
+const T={
+ zh:{grid:'配貨表',pending:'待回覆',req:'需求登記',std:'固定單／預留',hideZero:'隱藏 0/空白欄',hideNeg:'隱藏負數欄',hideEmpty:'隱藏空白列',owner:'業務',all:'全部',fzTop:'固定表頭',fzLeft:'固定左欄',upload:'上傳 Apollo 預估',
+  region:'地區',customer:'客戶',demand:'需求',code:'花色代碼',variety:'品種',supply:'總供應量',prod:'當週產出',stock:'庫存',remain:'剩餘',sub:'小計',f6sup:'6F 供應',f6rem:'6F 剩餘',add6:'＋ 增加 6F 列',next:'下週預估',nextAvail:'下週可用（扣本週超配）',addRow:'＋ 客戶列',
+  saved:'已同步',pinTitle:'配貨人登入',pinNote:'首次使用請輸入 PIN（原型為 777；正式版由伺服器驗證、記住裝置 30 天）',enter:'進入',
+  allocated:'已配',suggest:'建議',lastWk:'上週',share:'比例',noDemand:'目前品種沒有同事需求，仍可直接配貨。',pickCell:'點選任一品種欄或配貨格，這裡會顯示該品種的需求、建議與風險。',
+  shipDate:'出貨日',shipWk:'出貨週',supWk:'供應週',remark:'備註',submit:'送出需求',update:'更新需求',total:'合計',stems:'枝',boxes:'箱',myTickets:'我的需求',newTicket:'＋ 新需求',
+  qty:'數量',reply:'配貨回覆',grade:'規格',addFree:'＋ 新增表外品項',search:'搜尋花色或品種',status:'狀態',legAuto:'固定單／預留自動帶入',legOvr:'本週已修改'},
+ en:{grid:'Allocation',pending:'Pending',req:'Requests',std:'Standing & reserves',hideZero:'Hide 0/blank cols',hideNeg:'Hide negative cols',hideEmpty:'Hide empty rows',owner:'Sales',all:'All',fzTop:'Freeze header',fzLeft:'Freeze labels',upload:'Upload Apollo forecast',
+  region:'Region',customer:'Customer',demand:'Demand',code:'Color code',variety:'Variety',supply:'Total supply',prod:'Production',stock:'Stock',remain:'Remaining',sub:'Subtotal',f6sup:'6F supply',f6rem:'6F remaining',add6:'+ Add 6F row',next:'Next week forecast',nextAvail:'Next week net of over-allocation',addRow:'+ Customer row',
+  saved:'Synced',pinTitle:'Allocator sign-in',pinNote:'Enter the PIN on first use (prototype: 777; production verifies on the server and remembers the device for 30 days)',enter:'Enter',
+  allocated:'Allocated',suggest:'Suggested',lastWk:'Last wk',share:'Share',noDemand:'No colleague demand for this product yet. You can still allocate directly.',pickCell:'Select any product column or allocation cell to see its demand, suggestion and risk here.',
+  shipDate:'Ship date',shipWk:'Ship week',supWk:'Supply week',remark:'Remark',submit:'Submit request',update:'Update request',total:'Total',stems:'stems',boxes:'boxes',myTickets:'My requests',newTicket:'+ New request',
+  qty:'Qty',reply:'Allocated reply',grade:'Grade',addFree:'+ Add item not in list',search:'Search color or variety',status:'Status',legAuto:'Auto-filled standing/reserve',legOvr:'Changed this week'}};
+/* ================= utils ================= */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt=n=>n==null?'':Number(n).toLocaleString('en-US');
+const uid=p=>p+Math.random().toString(36).slice(2,8)+Date.now().toString(36).slice(-3);
+const clone=o=>JSON.parse(JSON.stringify(o??null));
+function lsGet(k){try{const v=localStorage.getItem(k);return v?JSON.parse(v):null}catch(e){return null}}
+function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){return false}}
+function parseQty(s){s=String(s??'').replace(/,/g,'').trim();if(s==='')return null;const n=Number(s);if(!isFinite(n))return undefined;return Math.floor(n+1e-9);}
+function isPlain(o){return o&&typeof o==='object'&&!Array.isArray(o);}
+function deepMerge(a,b){if(!isPlain(a)||!isPlain(b))return clone(b);const o={...a};for(const k in b)o[k]=isPlain(b[k])&&isPlain(o[k])?deepMerge(o[k],b[k]):clone(b[k]);return o;}
+/* ISO week */
+function isoOf(d){const t=new Date(Date.UTC(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate()));const day=t.getUTCDay()||7;t.setUTCDate(t.getUTCDate()+4-day);const y=t.getUTCFullYear();const w=Math.ceil(((t-Date.UTC(y,0,1))/864e5+1)/7);return y+'-W'+String(w).padStart(2,'0');}
+function weekMonday(id){const m=/^(\d{4})-W(\d{1,2})$/.exec(id||'');if(!m)return null;const y=+m[1],w=+m[2];const j4=new Date(Date.UTC(y,0,4));const mon=new Date(j4);mon.setUTCDate(j4.getUTCDate()-((j4.getUTCDay()||7)-1)+(w-1)*7);return mon;}
+function weekAdd(id,n){const m=weekMonday(id);m.setUTCDate(m.getUTCDate()+7*n);return isoOf(m);}
+const wShort=id=>id?id.split('-')[1]:'';
+function normWeek(v,base){v=String(v||'').trim().toUpperCase();if(!v)return '';const m=/^(?:(\d{4})-?)?W?(\d{1,2})$/.exec(v);if(!m)return null;return (m[1]||String(base||curWeek()).slice(0,4))+'-W'+m[2].padStart(2,'0');}
+function dateUTC(s){const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(s||'');return m?new Date(Date.UTC(+m[1],+m[2]-1,+m[3])):null;}
+function suggestedWeek(now=new Date()){const d=new Date(Date.UTC(now.getFullYear(),now.getMonth(),now.getDate()));const dow=d.getUTCDay();if(dow===0)d.setUTCDate(d.getUTCDate()+1);else if(dow>=4)d.setUTCDate(d.getUTCDate()+7);return isoOf(d);}
+function prodMeta(code){
+  const c=code.toUpperCase();let cat='color',unit='枝',grade='7–9F';
+  if(/^W\b|^W \(/.test(code))cat='white';
+  if(/^XX?L-/.test(c)){cat='high';unit='箱';grade=c.startsWith('XXL')?'13–15F':'11–12F';}
+  if(/^M-/.test(c)||c==='RRA'||c==='RRI')grade='99F';
+  return {cat,unit,grade};
+}
+const isAny=k=>typeof k==='string'&&/\|Any$/.test(k);
+function anyMembers(code){return S.products.filter(p=>p.code===code&&p.variety!=='Any');}
+function anyCodes(){return ANY_CODES.filter(c=>anyMembers(c).length>=2);}
+function getProd(k){const p=S.products.find(p=>p.key===k);if(p)return p;if(isAny(k)){const c=k.slice(0,-4);const m=anyMembers(c);if(m.length)return {key:k,code:c,variety:'Any',grade:m[0].grade,unit:m[0].unit,cat:m[0].cat,w:(UI.anyW&&UI.anyW[c])||64,virtual:true,members:m};}return null;}
+const sumN=arr=>{let s=null;for(const v of arr)if(v!=null)s=(s||0)+v;return s;};
+/* ================= state ================= */
+let S={products:FIXED.map(p=>({...p,w:72,hidden:false})),weeks:{},demands:[],tickets:{},notices:[],custMem:{},standing:[]};
+let UI, VER=0, READY=false;
+function sortProducts(list){const idx=c=>{const i=ORDER.indexOf(c);return i<0?999:i;};list.sort((a,b)=>idx(a.code)-idx(b.code));}
+function loadUI(){
+  UI=Object.assign({zoom:100,fzTop:true,fzLeft:true,info:true,hideZero:false,hideNeg:false,hideEmpty:false,owner:'',q:'',lang:'zh',week:null,exp:false,collapsed:{},pin:false,view:'grid',persona:'alloc',reqWho:'sabina',lw:[34,92,128,74]},lsGet(UI_KEY)||{});
+  UI.moveCol=null;UI.moveRow=null;
+}
+function saveUI(){lsSet(UI_KEY,{...UI,moveCol:null,moveRow:null});}
+const t=k=>(T[UI.lang]||T.zh)[k]||T.zh[k]||k;
+const rgName=id=>RG[id]?(UI.lang==='en'?RG[id].en:RG[id].zh):(id||'');
+function setStatus(txt,ok){const el=$('#save');el.textContent=txt;el.className='save'+(ok?' ok':'');}
+/* ================= persistence: Firebase Firestore, no sign-in, access by private link ================= */
+let ROLE='setup', KEY=null, TOKEN=null, ME=null, FBCFG=null, FS=null;
+const VIEWS={}; // requester: per-week product list + replies published by the allocator page
+S.people={};
+const WQ={};
+function bump(){VER++;}
+const P={cfg:x=>`ws/${KEY}/cfg/${x}`,week:id=>`ws/${KEY}/weeks/${id}`,notice:id=>ROLE==='admin'?`ws/${KEY}/notices/${id}`:`req/${TOKEN}/notices/${id}`,
+  ticket:(owner,tk)=>`req/${ROLE==='admin'?tokenOfName(owner):TOKEN}/tickets/${tk}`,view:(tok,id)=>`req/${tok}/view/${id}`};
+function tokenOfName(name){const p=PEOPLE.find(x=>x.name===name);return p&&S.people[p.id]?S.people[p.id].token:null;}
+function write(path,data,mode){
+  bump();
+  if(!FS||!READY){toast(UI.lang==='en'?'Still syncing — please try again in a moment':'資料同步中，請稍候再修改');return;}
+  if(!path||path.includes('/null/')){toast(UI.lang==='en'?'This colleague has no link yet':'這位同事還沒有連結');return;}
+  const q=WQ[path]=WQ[path]||{busy:false,pending:null};
+  if(!q.pending)q.pending={mode,data:clone(data)};
+  else if(mode==='set')q.pending={mode:'set',data:clone(data)};
+  else q.pending={mode:q.pending.mode,data:deepMerge(q.pending.data,data)};
+  flush(path);
+  if(ROLE==='admin')schedulePublish();
+}
+async function flush(path){
+  const q=WQ[path];if(q.busy||!q.pending)return;
+  const job=q.pending;q.pending=null;q.busy=true;q.inflight=job;
+  setStatus(UI.lang==='en'?'Saving…':'儲存中…');
+  try{
+    const ref=FS.doc(path);
+    if(job.mode==='update')await ref.set(job.data,{merge:true});else await ref.set(job.data);
+    setStatus(t('saved')+' '+new Date().toTimeString().slice(0,5),true);
+  }catch(e){
+    setStatus('⚠ '+(UI.lang==='en'?'Not saved':'未儲存'));toast((UI.lang==='en'?'Not saved — ':'未能儲存：')+(e&&(e.code||e.message)||e)+(UI.lang==='en'?'. Check the connection and try again.':'。請確認網路後再試一次。'));
+  }finally{q.busy=false;q.inflight=null;if(q.pending)flush(path);}
+}
+function pendingFor(path){const q=WQ[path];if(!q)return [];return [q.inflight,q.pending].filter(Boolean);}
+function weekDocFull(id){const w=S.weeks[id];return {up:w.up||null,sup:w.sup||{},rows:w.rows||[],alloc:w.alloc||{},rows6:w.rows6||[],alloc6:w.alloc6||{}};}
+function saveWeek(id,patch){if(ROLE!=='admin')return;const w=S.weeks[id];if(!w)return;if(!patch||!w._exists){w._exists=true;write(P.week(id),weekDocFull(id),'set');}else write(P.week(id),patch,'update');}
+function saveProducts(){write(P.cfg('products'),{list:S.products.map(({key,code,variety,cat,unit,grade,w,hidden,extra})=>({key,code,variety,cat,unit,grade,w,hidden:!!hidden,extra:!!extra}))},'set');}
+function saveStanding(){write(P.cfg('standing'),{items:S.standing},'set');}
+function saveCust(name){if(!name||ROLE!=='admin')return;write(P.cfg('customers'),{map:{[name]:S.custMem[name]}},'update');}
+function saveTicket(tk){const tt=S.tickets[tk];const {ack,...doc}=tt;write(P.ticket(tt.owner,tk),doc,'update');}
+function addNotice(n){S.notices.push(n);write(P.notice(n.id),n,'set');}
+function rebuildDemands(){S.demands=[];for(const [tk,tt] of Object.entries(S.tickets)){for(const l of tt.lines||[]){S.demands.push({...l,ticket:tk,week:tt.week,shipDate:tt.shipDate,owner:tt.owner,region:tt.region,customer:tt.customer||'',cancelled:!!(tt.cancelled||l.cancelled),pendingReduce:!!(l.reduceTs&&(tt.ack||{})[l.id+':r']!==l.reduceTs)});}}}
+let rerenderT=null;
+function scheduleRender(){clearTimeout(rerenderT);rerenderT=setTimeout(()=>{bump();const ae=document.activeElement;
+  if(UI.view!=='grid'&&ae&&ae.matches&&ae.matches('input,select,textarea')&&!ae.closest('#grid')){ae.addEventListener('blur',()=>scheduleRender(),{once:true});return;}
+  renderWeeks();renderView(true);},120);}
+/* ---- allocator side: apply colleagues' reductions/cancellations, keep rows and customer list in step ---- */
+function processTickets(){
+  if(ROLE!=='admin'||!READY)return;
+  const weekPatch={};const rowsChanged=new Set();
+  for(const [tk,tt] of Object.entries(S.tickets)){
+    if(!tt.week||!tt.region)continue;
+    const wk=W(tt.week);
+    let row=wk.rows.find(r=>rowMatch(r,{region:tt.region,customer:tt.customer||''}));
+    if(!row&&!tt.cancelled){row={id:uid('r'),region:tt.region,customer:tt.customer||''};const idx=wk.rows.map(x=>x.region).lastIndexOf(tt.region);wk.rows.splice(idx<0?wk.rows.length:idx+1,0,row);rowsChanged.add(tt.week);}
+    if(tt.customer&&!S.custMem[tt.customer]){S.custMem[tt.customer]={region:tt.region,owner:tt.owner};saveCust(tt.customer);}
+    const ack={};const ak=tt.ack||{};
+    const setA=(key,v)=>{(wk.alloc[row.id]=wk.alloc[row.id]||{})[key]=v;((weekPatch[tt.week]=weekPatch[tt.week]||{})[row.id]=weekPatch[tt.week][row.id]||{})[key]=v;};
+    for(const l of tt.lines||[]){
+      if(l.reduceTs&&ak[l.id+':r']!==l.reduceTs){
+        if(row&&l.variety!=='Any'){const a=effA(tt.week,row.id,l.key);if(a!=null&&(l.qty||0)<a)setA(l.key,l.qty||0);}
+        ack[l.id+':r']=l.reduceTs;}
+      const rel=l.releaseTs||(tt.cancelled?tt.releaseTs:null);
+      if((l.cancelled||tt.cancelled)&&rel&&ak[l.id+':x']!==rel){
+        if(row&&l.variety!=='Any'&&effA(tt.week,row.id,l.key)!=null)setA(l.key,null);
+        ack[l.id+':x']=rel;}
+    }
+    if(Object.keys(ack).length){tt.ack=Object.assign({},tt.ack,ack);write(P.ticket(tt.owner,tk),{ack},'update');}
+  }
+  bump();
+  for(const w of rowsChanged)saveWeek(w,S.weeks[w]._exists?{rows:S.weeks[w].rows}:null);
+  for(const [w,patch] of Object.entries(weekPatch))saveWeek(w,{alloc:patch});
+}
+/* ---- allocator side: publish what each colleague may see (no supply numbers) ---- */
+const PUBCACHE={};let pubT=null;
+function schedulePublish(){if(ROLE!=='admin')return;clearTimeout(pubT);pubT=setTimeout(publishViews,1500);}
+function publishViews(){
+  if(ROLE!=='admin'||!READY)return;
+  const ups=Object.keys(S.weeks).filter(k=>S.weeks[k].up).sort();
+  const latest=ups[ups.length-1];
+  for(const p of PEOPLE){
+    const tok=S.people[p.id]?.token;if(!tok)continue;
+    const weeks=new Set(ups);if(latest){weeks.add(weekAdd(latest,1));weeks.add(weekAdd(latest,2));}
+    for(const tt of Object.values(S.tickets))if(tt.owner===p.name&&tt.week)weeks.add(tt.week);
+    const docs={_cfg:{person:p.id,customers:S.custMem}};
+    for(const wk of weeks){
+      const {list,src}=reqProducts(wk);
+      const replies={};
+      for(const [tk,tt] of Object.entries(S.tickets)){if(tt.owner!==p.name||tt.week!==wk)continue;const r={};for(const d of S.demands.filter(d=>d.ticket===tk)){const a=lineAlloc(d);if(a!=null)r[d.key]=a;}replies[tk]=r;}
+      docs[wk]={products:list.map(x=>({key:x.key,code:x.code,variety:x.variety,grade:x.grade||'',unit:x.unit||'枝',fixed:!!x.fixed,any:!!x.any,members:x.members?x.members.map(m=>m.variety||m):null})),src,replies};
+    }
+    for(const [id,doc] of Object.entries(docs)){const path=P.view(tok,id);const js=JSON.stringify(doc);if(PUBCACHE[path]===js)continue;PUBCACHE[path]=js;
+      const q=WQ[path]=WQ[path]||{busy:false,pending:null};q.pending={mode:'set',data:{...doc,at:nowISO()}};flush(path);}
+  }
+}
+/* ---- connecting ---- */
+function loadFirebase(){
+  if(window.firebase&&firebase.firestore)return Promise.resolve();
+  const add=src=>new Promise((res,rej)=>{const s=document.createElement('script');s.src=src;s.onload=res;s.onerror=()=>rej(new Error('無法載入 Firebase 元件，請確認網路'));document.head.appendChild(s);});
+  return add('https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js').then(()=>add('https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js'));
+}
+function initFS(cfg){
+  if(FS)return FS;
+  const app=firebase.apps.length?firebase.app():firebase.initializeApp({apiKey:cfg.k,projectId:cfg.p,authDomain:cfg.p+'.firebaseapp.com'});
+  FS=app.firestore();try{FS.settings({ignoreUndefinedProperties:true,merge:true});}catch(_){}
+  return FS;
+}
+async function connect(){
+  if(ROLE==='setup'){renderView();return;}
+  setStatus(UI.lang==='en'?'Connecting…':'連線中…');
+  try{await loadFirebase();initFS(FBCFG);}catch(e){setStatus('⚠ '+e.message);toast(e.message);return;}
+  const err=e=>{setStatus('⚠ '+(UI.lang==='en'?'Sync stopped':'同步中斷'));toast((UI.lang==='en'?'Sync stopped: ':'同步中斷：')+(e&&(e.code||e.message)||'')+(e&&e.code==='permission-denied'?(UI.lang==='en'?' — check the link is complete':'，請確認連結完整，或 Firestore 規則已發布'):''));};
+  const got=new Set();let need=0;
+  const ready=(k)=>{got.add(k);if(!READY&&got.size>=need){READY=true;setStatus(t('saved'),true);bump();if(ROLE==='admin'){processTickets();schedulePublish();}scheduleRender();}};
+  if(ROLE==='admin'){
+    need=6;
+    FS.doc(P.cfg('products')).onSnapshot(s=>{const d=s.data();if(d&&Array.isArray(d.list)){const list=clone(d.list);for(const f of FIXED)if(!list.some(p=>p.key===f.key))list.unshift({...f,w:72,hidden:false});S.products=list;}ready('p');scheduleRender();schedulePublish();},err);
+    FS.doc(P.cfg('standing')).onSnapshot(s=>{const d=s.data();S.standing=d&&Array.isArray(d.items)?clone(d.items):[];ready('s');scheduleRender();schedulePublish();},err);
+    FS.doc(P.cfg('customers')).onSnapshot(s=>{const d=s.data();S.custMem=d&&d.map?clone(d.map):{};ready('c');schedulePublish();},err);
+    FS.collection(`ws/${KEY}/weeks`).onSnapshot(qs=>{
+      for(const ch of qs.docChanges()){const id=ch.doc.id;
+        if(ch.type==='removed'){delete S.weeks[id];continue;}
+        let w=clone(ch.doc.data());for(const p of pendingFor(P.week(id)))w=p.mode==='set'?clone(p.data):deepMerge(w,p.data);
+        S.weeks[id]=Object.assign({up:null,sup:{},rows:[],alloc:{},rows6:[],alloc6:{}},w,{_exists:true});}
+      ready('w');scheduleRender();schedulePublish();},err);
+    const wsNotices=[];const personNotices={};
+    const mergeNotices=()=>{S.notices=[...wsNotices,...Object.values(personNotices).flat()].sort((a,b)=>String(a.ts).localeCompare(String(b.ts)));};
+    FS.collection(`ws/${KEY}/notices`).orderBy('ts','desc').limit(80).onSnapshot(qs=>{wsNotices.length=0;qs.docs.forEach(d=>wsNotices.push(clone(d.data())));mergeNotices();ready('n');if(UI.view==='pending')scheduleRender();},err);
+    const ticketsBy={};let subscribed=false;
+    FS.doc(P.cfg('people')).onSnapshot(s=>{
+      const d=s.data()||{};S.people=clone(d);
+      if(!subscribed){subscribed=true;const toks=PEOPLE.filter(p=>S.people[p.id]?.token);need+=toks.length;
+        for(const p of toks){const tok=S.people[p.id].token;
+          FS.collection(`req/${tok}/tickets`).onSnapshot(qs=>{ticketsBy[p.id]={};qs.docs.forEach(x=>{ticketsBy[p.id][x.id]=clone(x.data());});
+            S.tickets={};for(const m of Object.values(ticketsBy))Object.assign(S.tickets,m);
+            for(const [path,q] of Object.entries(WQ))if(path.includes('/tickets/')&&q.pending&&q.pending.mode==='set'){S.tickets[path.split('/').pop()]=clone(q.pending.data);}
+            rebuildDemands();ready('t:'+p.id);processTickets();scheduleRender();schedulePublish();},err);
+          FS.collection(`req/${tok}/notices`).orderBy('ts','desc').limit(40).onSnapshot(qs=>{personNotices[p.id]=qs.docs.map(x=>clone(x.data()));mergeNotices();if(UI.view==='pending')scheduleRender();},err);}
+      }
+      ready('people');},err);
+  }else{
+    need=2;
+    FS.collection(`req/${TOKEN}/tickets`).onSnapshot(qs=>{S.tickets={};qs.docs.forEach(d=>{S.tickets[d.id]=clone(d.data());});for(const [path,q] of Object.entries(WQ))if(path.includes('/tickets/')&&q.pending&&q.pending.mode==='set')S.tickets[path.split('/').pop()]=clone(q.pending.data);rebuildDemands();ready('t');scheduleRender();},err);
+    FS.collection(`req/${TOKEN}/view`).onSnapshot(qs=>{for(const k of Object.keys(VIEWS))delete VIEWS[k];qs.docs.forEach(d=>{VIEWS[d.id]=clone(d.data());});
+      const c=VIEWS._cfg;if(c){ME=c.person;S.custMem=c.customers||{};if(PP[ME]?.en&&!UI.langSet)UI.lang='en';}
+      ready('v');scheduleRender();},err);
+  }
+}
+/* ---- first-time setup and data import ---- */
+const rnd=n=>{const a=new Uint8Array(n);crypto.getRandomValues(a);return Array.from(a,b=>'abcdefghijkmnpqrstuvwxyz23456789'[b%32]).join('');};
+function parseCfg(txt){const g=k=>{const m=new RegExp(k+`\\s*[:=]\\s*["']([^"']+)["']`).exec(txt||'');return m?m[1]:null;};return {k:g('apiKey'),p:g('projectId')};}
+function linkFor(kind,val){return `${location.origin}${location.pathname}#${kind}=${val}&p=${encodeURIComponent(FBCFG.p)}&k=${encodeURIComponent(FBCFG.k)}`;}
+async function createWorkspace(cfg){
+  FBCFG=cfg;await loadFirebase();initFS(cfg);
+  const key=rnd(32);const people={};for(const p of PEOPLE)people[p.id]={token:rnd(28)};
+  await FS.doc(`ws/${key}/cfg/people`).set(people);
+  await FS.doc(`ws/${key}/cfg/products`).set({list:FIXED.map(p=>({...p,w:72,hidden:false,extra:false}))});
+  await FS.doc(`ws/${key}/cfg/standing`).set({items:[]});
+  await FS.doc(`ws/${key}/cfg/customers`).set({map:{}});
+  return key;
+}
+async function importOld(data,progress){
+  if(!data||data.format!=='sunpride-alloc-v1')throw new Error(UI.lang==='en'?'This is not a platform export file':'這不是配貨平台匯出的資料檔');
+  const jobs=[];
+  for(const [k,v] of Object.entries(data.cfg||{}))if(k!=='people')jobs.push([P.cfg(k),v]);
+  for(const [id,v] of Object.entries(data.weeks||{}))jobs.push([P.week(id),v]);
+  for(const [tk,v] of Object.entries(data.tickets||{})){const tok=tokenOfName(v.owner);if(!tok)throw new Error((UI.lang==='en'?'Unknown requester: ':'找不到需求者：')+v.owner);jobs.push([`req/${tok}/tickets/${tk}`,v]);}
+  for(const n of data.notices||[])jobs.push([P.notice(n.id),n]);
+  let i=0;for(const [path,doc] of jobs){await FS.doc(path).set(doc);progress(++i,jobs.length);}
+  return jobs.length;
+}
+
+/* ================= week helpers ================= */
+function curWeek(){return UI.week||suggestedWeek();}
+function W(id=curWeek()){
+  if(!S.weeks[id]){
+    const prev=Object.keys(S.weeks).filter(k=>k<id).sort().pop()||Object.keys(S.weeks).sort()[0];
+    const src=S.weeks[prev];
+    S.weeks[id]={up:null,sup:{},rows:src?clone(src.rows):[],alloc:{},rows6:[],alloc6:{},_exists:false};
+  }
+  return S.weeks[id];
+}
+/* ================= standing orders & reserves ================= */
+const TIER={fixed:0,reserve:1};
+function standingFor(wkId){return S.standing.filter(it=>it.active!==false&&it.key&&(!it.from||it.from<=wkId)&&(!it.to||wkId<=it.to)).sort((a,b)=>(TIER[a.type]-TIER[b.type])||((a.order||0)-(b.order||0)));}
+function rawA(wk,rowId,key){if(isAny(key))return undefined;const v=wk.alloc?.[rowId]?.[key];return v==='auto'?undefined:v;}
+let AUTO={ver:-1,map:{}};
+function autoInfo(wkId){
+  if(AUTO.ver===VER&&AUTO.map[wkId])return AUTO.map[wkId];
+  if(AUTO.ver!==VER)AUTO={ver:VER,map:{}};
+  const wk=S.weeks[wkId];const res={cells:{},items:{},anyT:{}};
+  if(wk){const used={};
+    for(const it of standingFor(wkId)){
+      const row=wk.rows.find(r=>r.region===it.region&&(r.customer||'')===(it.customer||''));
+      if(!row){res.items[it.id]={norow:true};continue;}
+      if(isAny(it.key)){res.items[it.id]={row:row.id,anyTarget:it.qty||0};(res.anyT[row.id]=res.anyT[row.id]||{})[it.key]=((res.anyT[row.id][it.key])||0)+(it.qty||0);continue;}
+      const sup=supplyOf(it.key,wk);
+      let val;
+      if(sup==null)val=it.qty||0;else val=Math.max(0,Math.min(it.qty||0,sup-(used[it.key]||0)));
+      const manual=rawA(wk,row.id,it.key);
+      (res.cells[row.id]=res.cells[row.id]||{})[it.key]=((res.cells[row.id][it.key])||0)+val;
+      used[it.key]=(used[it.key]||0)+(manual!==undefined?(manual||0):val);
+      res.items[it.id]={row:row.id,auto:val,cut:val<(it.qty||0),manual};
+    }}
+  AUTO.map[wkId]=res;return res;
+}
+function effA(wkId,rowId,key){const wk=S.weeks[wkId];if(!wk)return null;if(isAny(key))return sumN(anyMembers(key.slice(0,-4)).map(p=>effA(wkId,rowId,p.key)));const v=rawA(wk,rowId,key);if(v!==undefined)return v;const a=autoInfo(wkId).cells[rowId]?.[key];return a??null;}
+function hasAuto(wkId,rowId,key){return autoInfo(wkId).cells[rowId]?.[key]!=null;}
+function ensureStandingRows(wkId){
+  const wk=W(wkId);let added=false;
+  for(const it of standingFor(wkId)){if(!wk.rows.some(r=>r.region===it.region&&(r.customer||'')===(it.customer||''))){const idx=wk.rows.map(x=>x.region).lastIndexOf(it.region);wk.rows.splice(idx<0?wk.rows.length:idx+1,0,{id:uid('r'),region:it.region,customer:it.customer||''});added=true;}}
+  if(added){bump();if(ROLE==='admin'&&UI.pin&&READY)saveWeek(wkId,{rows:wk.rows});}
+}
+/* ================= calculations ================= */
+function supplyOf(k,wk=W()){if(isAny(k))return sumN(anyMembers(k.slice(0,-4)).map(p=>supplyOf(p.key,wk)));const s=wk.sup?.[k];if(!s||(s.prod==null&&s.stock==null))return null;return Math.floor((s.prod||0)+(s.stock||0));}
+function allocSum(k,wkId=curWeek()){const wk=S.weeks[wkId];if(!wk)return 0;let s=0;for(const r of wk.rows){const v=effA(wkId,r.id,k);if(v!=null)s+=v;}return s;}
+function anyUnsplit(k,wkId=curWeek()){const t=autoInfo(wkId).anyT;let u=0;for(const rid in t){const tg=t[rid][k];if(tg)u+=Math.max(0,tg-(effA(wkId,rid,k)||0));}return u;}
+function remainOf(k,wkId=curWeek()){const wk=W(wkId);const sup=supplyOf(k,wk);const a=allocSum(k,wkId)+(isAny(k)?anyUnsplit(k,wkId):0);if(sup==null)return a?-a:null;return sup-a;}
+function f6Sup(k,wk=W()){if(isAny(k))return sumN(anyMembers(k.slice(0,-4)).map(p=>f6Sup(p.key,wk)));return wk.sup?.[k]?.f6??null;}
+function f6Rem(k,wk=W()){if(isAny(k))return sumN(anyMembers(k.slice(0,-4)).map(p=>f6Rem(p.key,wk)));const s=f6Sup(k,wk);let a=0;for(const r of wk.rows6){const v=wk.alloc6?.[r.id]?.[k];if(v!=null)a+=v;}if(s==null&&!a)return null;return (s||0)-a;}
+function nextOf(k,wk=W()){if(isAny(k))return sumN(anyMembers(k.slice(0,-4)).map(p=>nextOf(p.key,wk)));return wk.sup?.[k]?.next??null;}
+function nextAvail(k){const n=nextOf(k);const r=remainOf(k);if(n==null&&(r==null||r>=0))return null;return (n||0)+Math.min(r||0,0);}
+function weekDemands(wkId=curWeek()){return S.demands.filter(d=>d.week===wkId&&!d.cancelled);}
+function rowMatch(r,d){return r.region===d.region&&(r.customer||'')===(d.customer||'');}
+function demandFor(row,k,wkId=curWeek()){let exact=null,any=0;const code=k.split('|')[0];for(const d of weekDemands(wkId)){if(!rowMatch(row,d))continue;if(d.key===k)exact=(exact||0)+(d.qty||0);else if(d.variety==='Any'&&d.code===code)any+=d.qty||0;}return {exact,any};}
+/* ================= visibility ================= */
+function visibleProducts(){
+  const q=UI.q.trim().toLowerCase();const dem=new Set(weekDemands().map(d=>d.key));
+  const base=[];const hidAny=UI.hiddenAny||{};
+  for(const p of S.products){if(p.variety!=='Any'&&anyCodes().includes(p.code)&&!hidAny[p.code]&&!base.some(x=>x.key===p.code+'|Any'))base.push(getProd(p.code+'|Any'));base.push(p);}
+  return base.filter(p=>{
+    if(p.hidden)return false;
+    if(q&&!(p.code.toLowerCase().includes(q)||p.variety.toLowerCase().includes(q)))return false;
+    const sup=supplyOf(p.key),a=allocSum(p.key);
+    if(UI.hideZero&&!sup&&!a&&!dem.has(p.key)&&!f6Sup(p.key))return false;
+    if(UI.hideNeg){const r=remainOf(p.key);if(r!=null&&r<0)return false;}
+    return true;});
+}
+function visibleRows(){
+  const wkId=curWeek(),wk=W();
+  return wk.rows.filter(r=>{
+    if(UI.owner&&RG[r.region]?.owner!==UI.owner)return false;
+    if(UI.hideEmpty){const hasA=S.products.some(p=>{const v=effA(wkId,r.id,p.key);return v!=null&&v!==0;});const hasD=weekDemands().some(d=>rowMatch(r,d));if(!hasA&&!hasD)return false;}
+    return true;});
+}
+/* ================= grid render ================= */
+let ACT={k:null,row:null,grade:'normal'};
+function colLetter(i){let s='';i++;while(i>0){const m=(i-1)%26;s=String.fromCharCode(65+m)+s;i=Math.floor((i-1)/26);}return s;}
+function focusKey(el){if(!el||!el.dataset||!el.closest('#grid'))return null;return {f:el.dataset.f,row:el.dataset.row,row6:el.dataset.row6,k:el.dataset.k,val:el.value,s:el.selectionStart,e:el.selectionEnd,dirty:el.value!==el.dataset.prev};}
+function renderGrid(){
+  const fk=focusKey(document.activeElement);
+  const wkId=curWeek();ensureStandingRows(wkId);
+  const z=UI.zoom/100, wk=W(), vp=visibleProducts();
+  const rh=Math.round(26*z), narrow=innerWidth<600, lw=(narrow?[24,0,Math.min(UI.lw[2],92),Math.min(UI.lw[3],54)]:UI.lw).map(w=>Math.round(w*z));
+  const left=[0,lw[0],lw[0]+lw[1],lw[0]+lw[1]+lw[2]];
+  const tbl=$('#grid');
+  tbl.style.setProperty('--z',z);tbl.style.setProperty('--rh',rh+'px');
+  const sl=i=>UI.fzLeft?` sl" style="left:${left[i]}px`:'';
+  const V=(p,html,vs)=>p.virtual?`<td class="ro anyc" data-vs="${vs||''}" data-k="${esc(p.key)}"></td>`:html;
+  let h='<colgroup>'+lw.map(w=>`<col style="width:${w}px">`).join('')+vp.map(p=>`<col data-ck="${esc(p.key)}" style="width:${Math.round((p.w||64)*z)}px">`).join('')+'</colgroup>';
+  h+='<thead>';
+  const actP=getProd(ACT.k);
+  h+=`<tr class="ltr"><th class="lt gut${sl(0)}"></th><th class="lt cA${sl(1)}">A ${t('region')}<span class="rz" data-rzl="1"></span></th><th class="lt${sl(2)}">B ${t('customer')}<span class="rz" data-rzl="2"></span></th><th class="lt cdh${sl(3)}">C ${t('demand')}｜<b>${esc(actP?actP.code:'—')}</b><span class="rz" data-rzl="3"></span></th>`;
+  vp.forEach((p,i)=>{const mv=UI.moveCol===p.key;h+=`<th class="lt${mv?' mv':''}" data-ltk="${esc(p.key)}" title="雙擊欄首可移動/隱藏">${mv?`<span class="mvb"><button type="button" data-act="colL" aria-label="左移">◀</button><button type="button" data-act="colHide" aria-label="隱藏">✕</button><button type="button" data-act="colR" aria-label="右移">▶</button></span>`:colLetter(i+3)}<span class="rz" data-rzk="${esc(p.key)}"></span></th>`;});
+  h+='</tr>';
+  const lab=(txt,cls='')=>`<th class="gut${sl(0)}"></th><th colspan="3" class="lab ${cls}${UI.fzLeft?` sl" style="left:${left[1]}px`:''}">${txt}</th>`;
+  h+=`<tr class="hcode">${lab(t('code'))}${vp.map(p=>p.virtual?`<th class="anyh" data-k="${esc(p.key)}" title="${esc(p.members.map(m=>m.variety).join(' / '))}"><b>${esc(p.code)}</b></th>`:`<th data-k="${esc(p.key)}"><input class="code t" data-f="code" data-k="${esc(p.key)}" value="${esc(p.code)}" aria-label="${t('code')}"></th>`).join('')}</tr>`;
+  h+=`<tr class="hvar">${lab(t('variety'))}${vp.map(p=>p.virtual?`<th class="anyh" data-k="${esc(p.key)}" title="${esc(p.members.map(m=>m.variety).join(' / '))}"><span class="avar">Any</span></th>`:`<th data-k="${esc(p.key)}" title="${esc(p.variety)} · ${esc(p.grade)} · ${p.unit}"><input class="var t" data-f="variety" data-k="${esc(p.key)}" value="${esc(p.variety)}" aria-label="${t('variety')}"></th>`).join('')}</tr>`;
+  const src=wk.up?`<small>${wShort(wkId)}</small>`:`<small class="tag">${UI.lang==='en'?'not uploaded':'尚未上傳'}</small>`;
+  h+=`<tr class="sup">${lab(t('supply')+src+`<small>${UI.exp?'▴':'▾'} ${UI.lang==='en'?'double-click':'雙擊展開'}</small>`)}${vp.map(p=>{if(p.virtual)return V(p,'','supply');const s=supplyOf(p.key);return `<td data-k="${esc(p.key)}" class="${s==null?'unk':''}"><input class="n" data-f="supply" data-k="${esc(p.key)}" value="${s??''}" placeholder="${s==null?'—':''}" inputmode="numeric" aria-label="${t('supply')}"></td>`}).join('')}</tr>`;
+  if(UI.exp){
+    h+=`<tr class="pr">${lab(t('prod')+' '+wShort(wkId))}${vp.map(p=>p.virtual?V(p,'','prod'):`<td data-k="${esc(p.key)}"><input class="n" data-f="prod" data-k="${esc(p.key)}" value="${wk.sup[p.key]?.prod??''}" inputmode="numeric"></td>`).join('')}</tr>`;
+    h+=`<tr class="pr">${lab(t('stock'))}${vp.map(p=>p.virtual?V(p,'','stock'):`<td data-k="${esc(p.key)}"><input class="n" data-f="stock" data-k="${esc(p.key)}" value="${wk.sup[p.key]?.stock??''}" inputmode="numeric"></td>`).join('')}</tr>`;
+  }
+  h+=`<tr class="rem">${lab(t('remain'))}${vp.map(p=>`<td class="ro" data-rem="${esc(p.key)}"></td>`).join('')}</tr>`;
+  h+='</thead><tbody>';
+  const rows=visibleRows();let rn=0;
+  const stdRows=new Set(standingFor(wkId).map(it=>it.region+'|'+(it.customer||'')));
+  for(const R of REGIONS){
+    const rr=rows.filter(r=>r.region===R.id);const all=wk.rows.filter(r=>r.region===R.id);
+    if(UI.owner&&R.owner!==UI.owner)continue;
+    if(!all.length&&UI.hideEmpty)continue;
+    const col=!!UI.collapsed[R.id];
+    h+=`<tr class="grp" data-grp="${R.id}"><th class="gut${sl(0)}">${col?'▸':'▾'}</th><th colspan="2" class="lab${sl(1)}"><span data-act="toggleGrp" data-rg="${R.id}" style="cursor:pointer">${esc(rgName(R.id))}${narrow?'':`<small>${esc(R.owner)}</small>`}</span> <button class="addb" type="button" data-act="addRow" data-rg="${R.id}">${t('addRow')}</button></th><td class="ro cdem${sl(3)}" data-cgrp="${R.id}"></td>${vp.map(p=>`<td class="ro" data-gsum="${R.id}|${esc(p.key)}"></td>`).join('')}</tr>`;
+    if(col)continue;
+    for(const r of rr){
+      rn++;const mv=UI.moveRow===r.id;const isStd=stdRows.has(r.region+'|'+(r.customer||''));
+      h+=`<tr data-row="${r.id}"><th class="gut${sl(0)}" data-gut="${r.id}" title="雙擊列首可移動/刪除">${mv?`<span class="mvb"><button type="button" data-act="rowU">▲</button><button type="button" data-act="rowD">▼</button><button type="button" data-act="rowX">✕</button></span>`:rn}</th>`;
+      h+=`<td class="cA${sl(1)}"><select class="rg" data-f="region" data-row="${r.id}" aria-label="${t('region')}">${REGIONS.map(x=>`<option value="${x.id}"${x.id===r.region?' selected':''}>${esc(rgName(x.id))}</option>`).join('')}</select></td>`;
+      h+=`<td class="${isStd?'stdc':''}${sl(2)}"><input class="t" data-f="customer" data-row="${r.id}" value="${esc(r.customer)}" placeholder="（地區總量）" aria-label="${t('customer')}"></td>`;
+      h+=`<td class="ro cdem${sl(3)}" data-c="${r.id}"></td>`;
+      h+=vp.map(p=>p.virtual?`<td class="ro anyc" tabindex="0" data-anyk="1" data-row="${r.id}" data-k="${esc(p.key)}"></td>`:`<td data-k="${esc(p.key)}"><input class="n" data-f="alloc" data-row="${r.id}" data-k="${esc(p.key)}" inputmode="numeric"></td>`).join('');
+      h+='</tr>';
+    }
+  }
+  h+='</tbody>';
+  // 6F
+  h+=`<tbody class="f6"><tr class="sech"><th class="gut${sl(0)}"></th><th colspan="${3+vp.length}" style="text-align:left"><span style="position:sticky;left:${UI.fzLeft?left[1]+6:6}px">6F　${UI.lang==='en'?'off-spec, allocated separately':'規格外切花・獨立供應與配貨'}</span></th></tr>`;
+  h+=`<tr class="sec">${lab(t('f6sup'))}${vp.map(p=>p.virtual?V(p,'','f6'):`<td data-k="${esc(p.key)}"><input class="n" data-f="f6" data-k="${esc(p.key)}" value="${f6Sup(p.key)??''}" inputmode="numeric"></td>`).join('')}</tr>`;
+  const regOpts=cur=>{const ids=[...F6_QUICK,...REGIONS.map(r=>r.id).filter(id=>!F6_QUICK.includes(id))];let o=ids.map(id=>`<option value="${id}"${id===cur?' selected':''}>${esc(rgName(id))}</option>`).join('');if(cur&&!RG[cur])o=`<option value="${esc(cur)}" selected>${esc(cur)}</option>`+o;return o;};
+  for(const r of wk.rows6){
+    h+=`<tr data-row6="${r.id}"><th class="gut${sl(0)}"><button class="addb" type="button" data-act="del6" data-row6="${r.id}" aria-label="刪除 6F 列">✕</button></th>${narrow?`<td class="cA${sl(1)}"></td><td class="${sl(2)}"><select class="rg" data-f="region6" data-row6="${r.id}" aria-label="${t('region')}">${regOpts(r.region)}</select></td>`:`<td class="cA${sl(1)}"><select class="rg" data-f="region6" data-row6="${r.id}" aria-label="${t('region')}">${regOpts(r.region)}</select></td><td class="${sl(2)}"><input class="t" data-f="customer6" data-row6="${r.id}" value="${esc(r.customer)}" placeholder="${UI.lang==='en'?'customer (optional)':'客戶（選填）'}"></td>`}<td class="ro${sl(3)}"></td>${vp.map(p=>p.virtual?V(p,'',''):`<td data-k="${esc(p.key)}"><input class="n" data-f="alloc6" data-row6="${r.id}" data-k="${esc(p.key)}" value="${wk.alloc6?.[r.id]?.[p.key]??''}" inputmode="numeric"></td>`).join('')}</tr>`;
+  }
+  h+=`<tr class="rem">${lab(t('f6rem'))}${vp.map(p=>`<td class="ro" data-rem6="${esc(p.key)}"></td>`).join('')}</tr>`;
+  h+=`<tr><th class="gut${sl(0)}"></th><th colspan="3" class="lab${UI.fzLeft?` sl" style="left:${left[1]}px`:''}"><button class="addb" type="button" data-act="add6">${t('add6')}</button></th>${vp.map(()=>'<td></td>').join('')}</tr></tbody>`;
+  const nw=wShort(weekAdd(wkId,1));
+  h+=`<tbody class="nx"><tr class="sec">${lab(t('next')+' '+nw)}${vp.map(p=>p.virtual?V(p,'','next'):`<td data-k="${esc(p.key)}"><input class="n" data-f="next" data-k="${esc(p.key)}" value="${nextOf(p.key)??''}" inputmode="numeric"></td>`).join('')}</tr>`;
+  h+=`<tr class="sec">${lab(t('nextAvail'))}${vp.map(p=>`<td class="ro" data-nav="${esc(p.key)}"></td>`).join('')}</tr></tbody>`;
+  tbl.innerHTML=h;
+  tbl.classList.toggle('fz-top',UI.fzTop);tbl.classList.toggle('noA',narrow);
+  const sc=$('#scroller');sc.style.scrollPaddingLeft=(UI.fzLeft?left[3]+lw[3]:0)+'px';
+  if(UI.fzTop){let top=0;tbl.querySelectorAll('thead tr').forEach(tr=>{tr.querySelectorAll('th,td').forEach(c=>{c.style.top=top+'px';});top+=tr.getBoundingClientRect().height;});sc.style.scrollPaddingTop=top+'px';}else sc.style.scrollPaddingTop='0px';
+  const hidden=S.products.filter(p=>p.hidden).length+Object.keys(UI.hiddenAny||{}).length;
+  $('#hiddenChip').innerHTML=hidden?`<button class="chip" type="button" data-act="showAll">${UI.lang==='en'?`${hidden} hidden · show all`:`已隱藏 ${hidden} 欄・全部顯示`}</button>`:'';
+  refreshComputed(true);
+  if(fk){const sel=['f','row','row6','k'].filter(x=>fk[x]!=null).map(x=>`[data-${x}="${CSS.escape(fk[x])}"]`).join('');const el=sel?tbl.querySelector(sel):null;if(el){el.dataset.prev=el.value;if(fk.dirty)el.value=fk.val;el._restoring=true;el.focus({preventScroll:true});el._restoring=false;try{el.setSelectionRange(fk.s,fk.e);}catch(_){} }}
+  sliders.forEach(s=>s.sync());
+}
+function refreshComputed(force){
+  const wkId=curWeek(),wk=W(),tbl=$('#grid');
+  const ae=document.activeElement;
+  tbl.querySelectorAll('input[data-f="alloc"]').forEach(inp=>{
+    const r=inp.dataset.row,k=inp.dataset.k;const v=effA(wkId,r,k);const raw=rawA(wk,r,k);const au=hasAuto(wkId,r,k);
+    if(inp!==ae)inp.value=v??'';
+    const td=inp.parentElement;td.classList.toggle('auto',au&&raw===undefined);td.classList.toggle('ovr',au&&raw!==undefined);
+    td.title=au?(raw===undefined?(UI.lang==='en'?'Auto-filled from standing order/reserve':'固定單／長期預留自動帶入'):(UI.lang==='en'?`Changed this week (default ${autoInfo(wkId).cells[r][k]})`:`本週已修改（預設 ${autoInfo(wkId).cells[r][k]}）`)):'';
+    const row=wk.rows.find(x=>x.id===r);const d=demandFor(row,k);const tot=(d.exact||0)+(d.any||0);td.classList.toggle('over',v!=null&&(d.exact!=null||d.any)&&v>tot);});
+  tbl.querySelectorAll('[data-vs]').forEach(td=>{const k=td.dataset.k,vs=td.dataset.vs;let v=null;const ms=anyMembers(k.slice(0,-4));
+    if(vs==='supply')v=supplyOf(k);else if(vs==='f6')v=f6Sup(k);else if(vs==='next')v=nextOf(k);else if(vs==='prod'||vs==='stock')v=sumN(ms.map(p=>wk.sup?.[p.key]?.[vs]??null));
+    td.textContent=v==null?'':fmt(v);});
+  const AT=autoInfo(wkId).anyT;
+  tbl.querySelectorAll('td[data-anyk]').forEach(td=>{const r=td.dataset.row,k=td.dataset.k;const v=effA(wkId,r,k);const tg=AT[r]?.[k];
+    td.textContent=tg?`${fmt(v||0)}／${fmt(tg)}`:(v==null?'':fmt(v));td.classList.toggle('under',!!tg&&(v||0)<tg);
+    td.title=tg?(UI.lang==='en'?`Reserve ${tg} (Any) — split it into the variety columns`:`預留 ${tg}（不指定品種），請在右側同色品種欄填入實際配貨`):(UI.lang==='en'?'Sum of this color’s varieties':'同色各品種配貨合計');});
+  tbl.querySelectorAll('[data-rem]').forEach(td=>{const k=td.dataset.rem;const r=remainOf(k);const n=nextOf(k);td.textContent=r==null?'':fmt(r);td.className='ro'+(r!=null&&r<0?((n==null||n===0)?' alarm':' neg'):'');td.title=r!=null&&r<0&&(n==null||n===0)?'本週超配且下週無產出':'';});
+  tbl.querySelectorAll('[data-rem6]').forEach(td=>{const r=f6Rem(td.dataset.rem6);td.textContent=r==null?'':fmt(r);td.className='ro'+(r!=null&&r<0?' neg':'');});
+  tbl.querySelectorAll('[data-nav]').forEach(td=>{const k=td.dataset.nav;const v=nextAvail(k);const r=remainOf(k);const n=nextOf(k);td.textContent=v==null?'':fmt(v);td.className='ro'+(r!=null&&r<0&&!n?' alarm':(v!=null&&v<0?' neg':''));});
+  tbl.querySelectorAll('[data-gsum]').forEach(td=>{const [rg,...kk]=td.dataset.gsum.split('|');const k=kk.join('|');let s=0,has=false;for(const r of wk.rows){if(r.region!==rg)continue;const v=effA(wkId,r.id,k);if(v!=null){s+=v;has=true;}}td.textContent=has?fmt(s):'';});
+  const k=ACT.k;
+  tbl.querySelectorAll('[data-c]').forEach(td=>{const r=wk.rows.find(x=>x.id===td.dataset.c);if(!r||!k){td.textContent='';return;}const d=demandFor(r,k);td.innerHTML=(d.exact==null?'<span class="unk">—</span>':fmt(d.exact))+(d.any?` <small>+Any ${fmt(d.any)}</small>`:'');});
+  tbl.querySelectorAll('[data-cgrp]').forEach(td=>{if(!k){td.textContent='';return;}let s=0,has=false;for(const r of wk.rows){if(r.region!==td.dataset.cgrp)continue;const d=demandFor(r,k);if(d.exact!=null){s+=d.exact;has=true;}}td.textContent=has?fmt(s):'';});
+  const ch=tbl.querySelector('.cdh b');if(ch){const p=getProd(k);ch.textContent=p?p.code:'—';}
+  tbl.querySelectorAll('th.act').forEach(th=>th.classList.remove('act'));
+  if(k)tbl.querySelectorAll(`.hcode th[data-k="${CSS.escape(k)}"],.hvar th[data-k="${CSS.escape(k)}"]`).forEach(th=>th.classList.add('act'));
+  tbl.querySelectorAll('tr.actrow').forEach(tr=>tr.classList.remove('actrow'));
+  if(ACT.row){const tr=tbl.querySelector(`tr[data-row="${ACT.row}"]`);if(tr)tr.classList.add('actrow');}
+  renderInfo();updateBadge();
+}
+/* ================= info rail ================= */
+function renderInfo(){
+  const el=$('#info');el.dataset.collapsed=String(!UI.info);
+  const tog=`<button class="btn sm" type="button" data-act="toggleInfo" aria-label="收合資訊區">${UI.info?(UI.lang==='en'?'Hide':'收合'):'ⓘ'}</button>`;
+  if(!UI.info){el.innerHTML=tog;return;}
+  const p=getProd(ACT.k);
+  if(!p){el.innerHTML=`<div class="ih"><div><h3>${UI.lang==='en'?'Product details':'品種資訊'}</h3></div>${tog}</div><p class="note ib">${t('pickCell')}</p><p class="note ib">${UI.lang==='en'?'Tips: arrow keys / Enter move between cells; paste a block copied from Excel; double-click a column letter or row number to move it.':'操作：方向鍵／Enter 移動、可直接貼上 Excel 區塊；雙擊欄首字母或列號可移動、隱藏或刪除。'}</p>`;return;}
+  const wkId=curWeek(),wk=W(),k=p.key,sup=supplyOf(k),a=allocSum(k),rem=remainOf(k),nx=nextOf(k),s6=f6Sup(k),r6=f6Rem(k);
+  const s=wk.sup[k]||{};
+  const prevId=weekAdd(wkId,-1);
+  const lines=[];
+  for(const d of weekDemands()){
+    if(p.virtual?d.code!==p.code:(d.key!==k&&!(d.variety==='Any'&&d.code===p.code)))continue;
+    const row=wk.rows.find(r=>rowMatch(r,d));
+    lines.push({d,row,alloc:row?effA(wkId,row.id,k):null,any:p.virtual?d.variety==='Any':d.key!==k,last:row&&S.weeks[prevId]?effA(prevId,row.id,k):null});
+  }
+  const D=lines.reduce((s,l)=>s+(l.d.qty||0),0);const base=sup??0;
+  lines.forEach(l=>{const q=l.d.qty||0;l.sug=D<=base?q:Math.floor(base*q/D);l.pct=D?Math.round(q/D*100):0;});
+  const direct=wk.rows.filter(r=>effA(wkId,r.id,k)!=null&&!lines.some(l=>l.row&&l.row.id===r.id));
+  const risk=rem!=null&&rem<0?(!nx?`<div class="alert">${UI.lang==='en'?`Over-allocated by ${fmt(-rem)} and next week has no production.`:`本週超配 ${fmt(-rem)}，且下週沒有產出。`}</div>`:`<div class="alert" style="background:var(--warn-bg);color:var(--warn)">${UI.lang==='en'?`Over-allocated by ${fmt(-rem)}; will be taken from next week (${fmt(nx)} → ${fmt(nx+rem)}).`:`本週超配 ${fmt(-rem)}，將自下週預估扣除（${fmt(nx)} → ${fmt(nx+rem)}）。`}</div>`):'';
+  // standing for this product
+  const AI=autoInfo(wkId);
+  const std=standingFor(wkId).filter(it=>it.key===k).map(it=>{const inf=AI.items[it.id]||{};const row=wk.rows.find(r=>r.id===inf.row);const eff=row?effA(wkId,row.id,k):null;return `<tr><td>${it.type==='fixed'?(UI.lang==='en'?'Standing':'固定單'):(UI.lang==='en'?'Reserve':'預留')} · ${esc(it.customer||rgName(it.region))}</td><td>${fmt(it.qty)}</td><td>${inf.auto??inf.anyTarget??'—'}${inf.cut?'<span class="any">不足</span>':''}</td><td>${eff??'—'}${inf.manual!==undefined?'<span class="any">改</span>':''}</td></tr>`;}).join('');
+  const actRow=ACT.row&&wk.rows.find(r=>r.id===ACT.row);
+  let actLine='';
+  if(actRow){const d=demandFor(actRow,k);const v=effA(wkId,actRow.id,k);const l=lines.find(l=>l.row&&l.row.id===actRow.id&&!l.any);const ov=hasAuto(wkId,actRow.id,k)&&rawA(wk,actRow.id,k)!==undefined;
+    actLine=`<div class="panel ib" style="padding:6px 8px"><b>${esc(rgName(actRow.region))}${actRow.customer?' · '+esc(actRow.customer):''}</b><div class="note">${t('demand')} ${d.exact??'—'}${d.any?` (+Any ${d.any})`:''}　${t('allocated')} ${v??'—'}　${t('suggest')} ${l?fmt(l.sug):'—'}　${t('lastWk')} ${S.weeks[prevId]?(effA(prevId,actRow.id,k)??'—'):'—'}</div>${p.virtual?`<div class="note">${p.members.map(m=>esc(m.variety)+' '+(effA(wkId,actRow.id,m.key)??'—')).join('　')}</div>`:''}${ov?`<button class="btn sm" type="button" data-act="restoreCell" data-row="${actRow.id}" data-k="${esc(k)}" style="margin-top:4px">${UI.lang==='en'?'Restore default':'恢復固定單／預留預設'} ${autoInfo(wkId).cells[actRow.id][k]}</button>`:''}</div>`;}
+  el.innerHTML=`<div class="ih"><div><h2>${esc(p.code)}</h2><p>${esc(p.variety)} · ${esc(ACT.grade==='6F'?'6F':p.grade)} · ${p.unit}</p></div>${tog}</div>
+  <div class="kp ib"><div><span>${t('supply')}</span><b>${sup==null?'—':fmt(sup)}</b></div><div><span>${t('allocated')}</span><b>${fmt(a)}</b></div><div><span>${t('remain')}</span><b style="${rem<0?'color:var(--neg)':''}">${rem==null?'—':fmt(rem)}</b></div>
+  <div><span>${t('prod')}／${t('stock')}</span><b>${s.prod??'—'}／${s.stock??'—'}</b></div><div><span>${t('next')}</span><b>${nx==null?'—':fmt(nx)}</b></div><div><span>6F</span><b>${s6==null?'—':fmt(s6)}${r6!=null&&r6!==s6?`<small style="font-size:11px;color:var(--muted)">／剩${fmt(r6)}</small>`:''}</b></div></div>
+  ${risk?`<div class="ib">${risk}</div>`:''}${actLine}
+  ${std?`<div class="ib"><h3>${UI.lang==='en'?'Standing & reserves (priority order)':'固定單與預留（依滿足順位）'}</h3><table class="mini"><thead><tr><th></th><th>${UI.lang==='en'?'Default':'預設'}</th><th>${UI.lang==='en'?'Filled':'帶入'}</th><th>${UI.lang==='en'?'Actual':'本週實際'}</th></tr></thead><tbody>${std}</tbody></table></div>`:''}
+  <div class="ib"><h3>${UI.lang==='en'?'Demand & suggestion':'需求與配貨建議'}　<span class="note">${UI.lang==='en'?'total':'總需求'} ${fmt(D)}</span></h3>
+  ${lines.length?`<table class="mini"><thead><tr><th>${t('region')}／${t('customer')}</th><th>${t('demand')}</th><th>${t('allocated')}</th><th>${t('suggest')}</th><th>${t('share')}</th><th>${t('lastWk')}</th></tr></thead><tbody>${lines.map(l=>`<tr class="${actRow&&l.row&&l.row.id===actRow.id?'hl':''}"><td>${esc(rgName(l.d.region))}${l.d.customer?' · '+esc(l.d.customer):''}${l.any?'<span class="any">Any</span>':''}</td><td>${fmt(l.d.qty)}</td><td>${l.alloc??'—'}</td><td>${fmt(l.sug)}</td><td>${l.pct}%</td><td>${l.last??'—'}</td></tr>`).join('')}</tbody></table>`:`<p class="note">${t('noDemand')}</p>`}
+  ${direct.length?`<p class="note">${UI.lang==='en'?'Allocated without a request':'無需求直接配貨'}：${direct.map(r=>esc(r.customer||rgName(r.region))+' '+effA(wkId,r.id,k)).join('、')}</p>`:''}
+  <p class="note">${UI.lang==='en'?'Suggestion = pro-rata share of total supply by demand. It never limits what you enter.':'建議值＝依需求比例分配本週總供應，僅供參考，不限制輸入。'}</p></div>`;
+}
+/* ================= grid events ================= */
+const grid=()=>$('#grid');
+function setActive(k,row,grade){const changed=k!==ACT.k||row!==ACT.row;ACT={k:k||ACT.k,row:row===undefined?null:row,grade:grade||'normal'};if(changed)refreshComputed();}
+function commitInput(inp,live){
+  const f=inp.dataset.f,k=inp.dataset.k,wkId=curWeek(),wk=W();
+  if(f==='code'||f==='variety'){if(live)return;const p=S.products.find(p=>p.key===k);const v=inp.value.trim();if(!v){inp.value=p[f];return;}if(p[f]===v)return;p[f]=v;saveProducts();renderInfo();return;}
+  if(f==='customer'){if(live)return;const r=wk.rows.find(r=>r.id===inp.dataset.row);const v=inp.value.trim();if(r.customer===v)return;r.customer=v;if(v&&!S.custMem[v]){S.custMem[v]={region:r.region,owner:RG[r.region]?.owner||''};saveCust(v);}saveWeek(wkId,{rows:wk.rows});bump();refreshComputed();return;}
+  if(f==='customer6'){if(live)return;const r=wk.rows6.find(r=>r.id===inp.dataset.row6);r.customer=inp.value.trim();saveWeek(wkId,{rows6:wk.rows6});return;}
+  const q=parseQty(inp.value);
+  if(q===undefined){if(!live){inp.value=inp.dataset.prev??'';toast(UI.lang==='en'?'Numbers only — value restored':'只能輸入數字，已還原');}return;}
+  if(f==='alloc'){const id=inp.dataset.row;wk.alloc[id]=wk.alloc[id]||{};
+    let val=q;
+    if(hasAuto(wkId,id,k)){const prevRaw=wk.alloc[id][k];wk.alloc[id][k]='auto';bump();const au=autoInfo(wkId).cells[id][k];wk.alloc[id][k]=prevRaw;if(q===au)val='auto';}
+    wk.alloc[id][k]=val;bump();
+    if(!live)saveWeek(wkId,{alloc:{[id]:{[k]:val}}});}
+  else if(f==='alloc6'){const id=inp.dataset.row6;wk.alloc6[id]=wk.alloc6[id]||{};wk.alloc6[id][k]=q;bump();if(!live)saveWeek(wkId,{alloc6:{[id]:{[k]:q}}});}
+  else{const s=wk.sup[k]=wk.sup[k]||{prod:null,stock:null,f6:null,next:null};
+    if(f==='supply'){s.prod=q==null?null:q-(s.stock||0);if(q==null)s.stock=null;}else s[f]=q;bump();
+    if(!live){saveWeek(wkId,{sup:{[k]:s}});
+      if(f==='prod'||f==='stock'){const si=grid().querySelector(`input[data-f="supply"][data-k="${CSS.escape(k)}"]`);if(si)si.value=supplyOf(k)??'';}
+      if(f==='supply')grid().querySelectorAll(`input[data-f="prod"][data-k="${CSS.escape(k)}"]`).forEach(i=>i.value=s.prod??'');}}
+  if(!live&&f!=='alloc')inp.value=q??'';
+  refreshComputed();
+  if(!live&&f==='alloc'){inp.value=effA(wkId,inp.dataset.row,k)??'';}
+}
+function navTarget(inp,dr,dc){
+  const all=[...grid().querySelectorAll('input,select,td[data-anyk]')].filter(e=>e.offsetParent||e.tagName==='TD');
+  const pos=e=>{const td=e.tagName==='TD'?e:e.closest('td,th');return {r:td.parentElement.rowIndex,c:cellX(td)};};
+  const p=pos(inp);let best=null,bd=1e9;
+  for(const e of all){if(e===inp)continue;const q=pos(e);
+    if(dr&&q.c===p.c&&Math.sign(q.r-p.r)===dr){const d=Math.abs(q.r-p.r);if(d<bd){bd=d;best=e;}}
+    if(dc&&q.r===p.r&&Math.sign(q.c-p.c)===dc){const d=Math.abs(q.c-p.c);if(d<bd){bd=d;best=e;}}}
+  return best;
+}
+function cellX(td){let x=0;for(const c of td.parentElement.cells){if(c===td)return x;x+=c.colSpan;}return x;}
+let justF=null;
+function initGridEvents(){
+  const g=grid();
+  g.addEventListener('focusin',e=>{const el=e.target;if(el.matches('td[data-anyk]')){setActive(el.dataset.k,el.dataset.row);return;}if(!el.matches('input,select'))return;if(!el._restoring)el.dataset.prev=el.value;if(el.tagName==='INPUT'){try{el.select()}catch(_){}justF=el;}
+    const k=el.dataset.k||null;const row=el.dataset.row||null;const grade=el.dataset.f==='alloc6'||el.dataset.f==='f6'?'6F':'normal';
+    if(k)setActive(k,el.dataset.f==='alloc'?row:null,grade);else if(row){ACT.row=row;refreshComputed();}});
+  g.addEventListener('mouseup',e=>{if(e.target===justF)e.preventDefault();justF=null;});
+  g.addEventListener('input',e=>{if(e.target.matches('input.n'))commitInput(e.target,true);});
+  g.addEventListener('change',e=>{const el=e.target,wkId=curWeek(),wk=W();
+    if(el.dataset.f==='region'){const r=wk.rows.find(r=>r.id===el.dataset.row);r.region=el.value;if(r.customer){S.custMem[r.customer]={region:r.region,owner:RG[r.region].owner};saveCust(r.customer);}saveWeek(wkId,{rows:wk.rows});bump();renderGrid();return;}
+    if(el.dataset.f==='region6'){const r=wk.rows6.find(r=>r.id===el.dataset.row6);r.region=el.value;saveWeek(wkId,{rows6:wk.rows6});return;}
+    if(el.matches('input')){commitInput(el,false);el.dataset.prev=el.value;}});
+  g.addEventListener('keydown',e=>{const el=e.target;if(el.matches('td[data-anyk]')){const m={ArrowDown:[1,0],Enter:[1,0],ArrowUp:[-1,0],ArrowRight:[0,1],ArrowLeft:[0,-1]}[e.key];if(m){const n=navTarget(el,m[0],m[1]);if(n){e.preventDefault();n.focus();n.scrollIntoView({block:'nearest',inline:'nearest'});}}return;}if(!el.matches('input,select'))return;
+    if(e.key==='Escape'&&el.tagName==='INPUT'){el.value=el.dataset.prev??'';commitInput(el,true);el.select();return;}
+    let dr=0,dc=0;
+    if(e.key==='ArrowDown'||(e.key==='Enter'&&!e.shiftKey))dr=1;else if(e.key==='ArrowUp'||(e.key==='Enter'&&e.shiftKey))dr=-1;
+    else if(e.key==='ArrowRight'||e.key==='ArrowLeft'){if(el.tagName==='SELECT')return;const all=el.selectionStart===0&&el.selectionEnd===el.value.length;const atEnd=el.selectionStart===el.value.length,atStart=el.selectionEnd===0;if(e.key==='ArrowRight'&&(all||atEnd))dc=1;if(e.key==='ArrowLeft'&&(all||atStart))dc=-1;}
+    if(el.tagName==='SELECT'&&dr&&e.key!=='Enter')return;
+    if(!dr&&!dc)return;
+    const n=navTarget(el,dr,dc);if(n){e.preventDefault();if(el.tagName==='INPUT')el.dispatchEvent(new Event('change',{bubbles:true}));n.focus();n.scrollIntoView({block:'nearest',inline:'nearest'});}});
+  g.addEventListener('paste',e=>{const el=e.target;if(!el.matches('input.n'))return;const txt=(e.clipboardData||window.clipboardData).getData('text');if(!/[\t\n]/.test(txt.trim()))return;e.preventDefault();
+    const m=txt.replace(/\r/g,'').replace(/\n$/,'').split('\n').map(l=>l.split('\t'));let cur=el,count=0;
+    for(let i=0;i<m.length;i++){let c=cur;for(let j=0;j<m[i].length;j++){if(!c)break;if(c.matches('input.n')){c.value=m[i][j].trim();commitInput(c,false);count++;}c=navTarget(c,0,1);}cur=navTarget(cur,1,0);if(!cur)break;}
+    toast((UI.lang==='en'?'Pasted ':'已貼上 ')+count+(UI.lang==='en'?' cells':' 格'));});
+  g.addEventListener('dblclick',e=>{
+    const lt=e.target.closest('[data-ltk]');if(lt&&!e.target.closest('.rz')&&!e.target.closest('button')){UI.moveCol=UI.moveCol===lt.dataset.ltk?null:lt.dataset.ltk;renderGrid();return;}
+    const gu=e.target.closest('[data-gut]');if(gu&&!e.target.closest('button')){UI.moveRow=UI.moveRow===gu.dataset.gut?null:gu.dataset.gut;renderGrid();return;}
+    if(e.target.closest('tr.sup')){UI.exp=!UI.exp;saveUI();renderGrid();}});
+  g.addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(!b)return;const a=b.dataset.act,wkId=curWeek(),wk=W();
+    if(a==='toggleGrp'){UI.collapsed[b.dataset.rg]=!UI.collapsed[b.dataset.rg];saveUI();renderGrid();}
+    else if(a==='addRow'){const R=RG[b.dataset.rg];const r={id:uid('r'),region:R.id,customer:''};const idx=wk.rows.map(x=>x.region).lastIndexOf(R.id);wk.rows.splice(idx<0?wk.rows.length:idx+1,0,r);UI.collapsed[R.id]=false;saveWeek(wkId,{rows:wk.rows});bump();renderGrid();const inp=grid().querySelector(`input[data-f="customer"][data-row="${r.id}"]`);inp&&inp.focus();}
+    else if(a==='add6'){const r={id:uid('s'),region:'AU',customer:''};wk.rows6.push(r);saveWeek(wkId,{rows6:wk.rows6});renderGrid();const inp=grid().querySelector(`input[data-f="alloc6"][data-row6="${r.id}"]`)||grid().querySelector(`select[data-f="region6"][data-row6="${r.id}"]`);inp&&inp.focus();}
+    else if(a==='del6'){const i=wk.rows6.findIndex(r=>r.id===b.dataset.row6);const [r]=wk.rows6.splice(i,1);saveWeek(wkId,{rows6:wk.rows6});renderGrid();toast(UI.lang==='en'?'6F row deleted':'已刪除 6F 列',()=>{wk.rows6.splice(i,0,r);saveWeek(wkId,{rows6:wk.rows6});renderGrid();});}
+    else if(a==='colL'||a==='colR'){const vp=visibleProducts();const i=vp.findIndex(p=>p.key===UI.moveCol);if(i<0||vp[i].virtual){toast(UI.lang==='en'?'The Any column stays in front of its varieties':'Any 欄固定在同色品種前');return;}let j=a==='colL'?i-1:i+1;while(vp[j]&&vp[j].virtual)j+=a==='colL'?-1:1;if(j<0||j>=vp.length)return;const A=S.products.indexOf(vp[i]),B=S.products.indexOf(vp[j]);[S.products[A],S.products[B]]=[S.products[B],S.products[A]];saveProducts();renderGrid();}
+    else if(a==='colHide'&&isAny(UI.moveCol)){const c=UI.moveCol.slice(0,-4);UI.hiddenAny=Object.assign({},UI.hiddenAny,{[c]:true});UI.moveCol=null;saveUI();renderGrid();toast((UI.lang==='en'?'Hidden: ':'已隱藏 ')+c+' Any',()=>{delete UI.hiddenAny[c];saveUI();renderGrid();});}
+    else if(a==='colHide'){const p=S.products.find(p=>p.key===UI.moveCol);p.hidden=true;UI.moveCol=null;saveProducts();renderGrid();toast((UI.lang==='en'?'Hidden: ':'已隱藏 ')+p.code,()=>{p.hidden=false;saveProducts();renderGrid();});}
+    else if(a==='rowU'||a==='rowD'){const i=wk.rows.findIndex(r=>r.id===UI.moveRow);const reg=wk.rows[i].region;let j=i;do{j+=a==='rowU'?-1:1;}while(j>=0&&j<wk.rows.length&&wk.rows[j].region!==reg);if(j<0||j>=wk.rows.length)return;[wk.rows[i],wk.rows[j]]=[wk.rows[j],wk.rows[i]];saveWeek(wkId,{rows:wk.rows});renderGrid();}
+    else if(a==='rowX'){const i=wk.rows.findIndex(r=>r.id===UI.moveRow);const [r]=wk.rows.splice(i,1);UI.moveRow=null;saveWeek(wkId,{rows:wk.rows});bump();renderGrid();toast((UI.lang==='en'?'Row deleted: ':'已刪除列：')+(r.customer||rgName(r.region)),()=>{wk.rows.splice(i,0,r);saveWeek(wkId,{rows:wk.rows});bump();renderGrid();});}
+  });
+  g.addEventListener('pointerdown',e=>{const h=e.target.closest('.rz');if(!h)return;e.preventDefault();const z=UI.zoom/100;const x0=e.clientX;
+    const isL=h.dataset.rzl!=null;const p=isL?null:getProd(h.dataset.rzk);const w0=isL?UI.lw[+h.dataset.rzl]:(p.w||64);
+    const col=isL?grid().querySelectorAll('col')[+h.dataset.rzl]:grid().querySelector(`col[data-ck="${CSS.escape(p.key)}"]`);
+    const mv=ev=>{const w=Math.max(28,Math.round(w0+(ev.clientX-x0)/z));if(isL)UI.lw[+h.dataset.rzl]=w;else p.w=w;col.style.width=Math.round(w*z)+'px';sliders.forEach(s=>s.sync());};
+    const up=()=>{removeEventListener('pointermove',mv);removeEventListener('pointerup',up);if(isL)saveUI();else if(p.virtual){UI.anyW=Object.assign({},UI.anyW,{[p.code]:p.w});saveUI();}else saveProducts();renderGrid();};
+    addEventListener('pointermove',mv);addEventListener('pointerup',up);});
+  g.addEventListener('dblclick',e=>{const h=e.target.closest('.rz');if(!h)return;e.stopPropagation();if(h.dataset.rzl!=null){UI.lw[+h.dataset.rzl]=[34,92,128,74][+h.dataset.rzl];saveUI();}else{const p=getProd(h.dataset.rzk);if(p.virtual){if(UI.anyW)delete UI.anyW[p.code];saveUI();}else{p.w=p.cat==='white'||p.cat==='high'?72:64;saveProducts();}}renderGrid();},true);
+}
+/* ================= sliders (left + bottom) ================= */
+class Slider{
+  constructor(el,sc,dir){this.el=el;this.sc=sc;this.dir=dir;this.th=el.querySelector('.thumb');
+    sc.addEventListener('scroll',()=>this.sync(),{passive:true});el.addEventListener('pointerdown',e=>this.down(e));new ResizeObserver(()=>this.sync()).observe(sc);}
+  dims(){const v=this.dir==='v';return {total:v?this.sc.scrollHeight:this.sc.scrollWidth,view:v?this.sc.clientHeight:this.sc.clientWidth,pos:v?this.sc.scrollTop:this.sc.scrollLeft,track:v?this.el.clientHeight:this.el.clientWidth};}
+  sync(){const d=this.dims();const ratio=Math.min(1,d.view/Math.max(1,d.total));const len=Math.max(28,d.track*ratio);const max=Math.max(0,d.total-d.view);const off=max?(d.pos/max)*(d.track-len):0;
+    this.th.style[this.dir==='v'?'height':'width']=len+'px';this.th.style[this.dir==='v'?'top':'left']=off+'px';this.el.style.opacity=ratio>=1?.35:1;this.len=len;}
+  down(e){e.preventDefault();const d=this.dims();const v=this.dir==='v';const r=this.el.getBoundingClientRect();const start=v?e.clientY:e.clientX;const onThumb=e.target===this.th;
+    const max=d.total-d.view;const span=d.track-this.len;
+    if(!onThumb){const p=(start-(v?r.top:r.left)-this.len/2)/Math.max(1,span);this.set(p*max);}
+    const pos0=v?this.sc.scrollTop:this.sc.scrollLeft;
+    this.th.classList.add('drag');this.el.setPointerCapture(e.pointerId);
+    const mv=ev=>{const dl=(v?ev.clientY:ev.clientX)-start;if(onThumb)this.set(pos0+dl/Math.max(1,span)*max);else{const p=((v?ev.clientY:ev.clientX)-(v?r.top:r.left)-this.len/2)/Math.max(1,span);this.set(p*max);}};
+    const up=()=>{this.th.classList.remove('drag');this.el.removeEventListener('pointermove',mv);this.el.removeEventListener('pointerup',up);this.el.removeEventListener('pointercancel',up);};
+    this.el.addEventListener('pointermove',mv);this.el.addEventListener('pointerup',up);this.el.addEventListener('pointercancel',up);}
+  set(x){if(this.dir==='v')this.sc.scrollTop=x;else this.sc.scrollLeft=x;}
+}
+let sliders=[];
+/* ================= zoom ================= */
+function setZoom(z){
+  z=Math.max(60,Math.min(150,Math.round(z/5)*5));if(z===UI.zoom)return;
+  const sc=$('#scroller');const fx=sc.scrollLeft/Math.max(1,sc.scrollWidth),fy=sc.scrollTop/Math.max(1,sc.scrollHeight);
+  UI.zoom=z;saveUI();$('#zoom').value=z;$('#zv').textContent=z+'%';renderGrid();
+  sc.scrollLeft=fx*sc.scrollWidth;sc.scrollTop=fy*sc.scrollHeight;
+}
+function initZoom(){
+  $('#zoom').value=UI.zoom;$('#zv').textContent=UI.zoom+'%';
+  $('#zoom').addEventListener('input',e=>setZoom(+e.target.value));
+  $('#zIn').onclick=()=>setZoom(UI.zoom+10);$('#zOut').onclick=()=>setZoom(UI.zoom-10);
+  const sc=$('#scroller');
+  sc.addEventListener('wheel',e=>{if(e.ctrlKey||e.metaKey){e.preventDefault();setZoom(UI.zoom+(e.deltaY<0?5:-5));}},{passive:false});
+  let pd=null,pz=100;
+  sc.addEventListener('touchstart',e=>{if(e.touches.length===2){pd=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);pz=UI.zoom;}},{passive:true});
+  sc.addEventListener('touchmove',e=>{if(e.touches.length===2&&pd){e.preventDefault();const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);setZoom(pz*d/pd);}},{passive:false});
+  sc.addEventListener('touchend',()=>{pd=null;});
+}
+/* ================= toolbar ================= */
+function initToolbar(){
+  const bind=(id,key)=>{const el=$(id);el.checked=!!UI[key];el.onchange=()=>{UI[key]=el.checked;saveUI();renderGrid();};};
+  bind('#fZero','hideZero');bind('#fNeg','hideNeg');bind('#fEmpty','hideEmpty');bind('#fzTop','fzTop');bind('#fzLeft','fzLeft');
+  $('#q').value=UI.q;$('#q').oninput=e=>{UI.q=e.target.value;saveUI();renderGrid();};
+  const fo=$('#fOwner');fo.innerHTML=`<option value="">${t('all')}</option>`+[...new Set(REGIONS.map(r=>r.owner).filter(Boolean))].map(o=>`<option${o===UI.owner?' selected':''}>${o}</option>`).join('');
+  fo.onchange=()=>{UI.owner=fo.value;saveUI();renderGrid();};
+  $('#moreBtn').onclick=()=>$('#toolbar').classList.toggle('open');
+  $('#hiddenChip').onclick=e=>{if(e.target.closest('[data-act="showAll"]')){const any=S.products.some(p=>p.hidden);UI.hiddenAny={};saveUI();if(any){S.products.forEach(p=>p.hidden=false);saveProducts();}renderGrid();}};
+  $('#info').onclick=e=>{if(e.target.closest('[data-act="toggleInfo"]')){UI.info=!UI.info;saveUI();renderInfo();sliders.forEach(s=>s.sync());}
+    const rb=e.target.closest('[data-act="restoreCell"]');if(rb){const wkId=curWeek(),wk=W();(wk.alloc[rb.dataset.row]=wk.alloc[rb.dataset.row]||{})[rb.dataset.k]='auto';bump();saveWeek(wkId,{alloc:{[rb.dataset.row]:{[rb.dataset.k]:'auto'}}});renderGrid();toast(UI.lang==='en'?'Restored to default':'已恢復預設');}};
+  $('#upBtn').onclick=()=>$('#upFile').click();
+  $('#upFile').onchange=e=>{const f=e.target.files[0];e.target.value='';if(f)startImport(f);};
+  $('#legend').innerHTML=`<span class="lg auto">12</span>${t('legAuto')}<span class="lg ovr">12</span>${t('legOvr')}`;
+}
+/* ================= Apollo import ================= */
+let XLSXp=null;
+function loadXLSX(){if(window.XLSX)return Promise.resolve(window.XLSX);if(XLSXp)return XLSXp;XLSXp=new Promise((res,rej)=>{const s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';s.onload=()=>res(window.XLSX);s.onerror=()=>{XLSXp=null;rej(new Error(UI.lang==='en'?'Could not load the Excel reader':'無法載入 Excel 解析元件'));};document.head.appendChild(s);});return XLSXp;}
+let IMP=null;
+async function startImport(file){
+  const box=$('#imp');box.hidden=false;
+  const stage=s=>box.innerHTML=`<div class="prog">${esc(file.name)} — ${s}</div>`;
+  try{
+    stage(UI.lang==='en'?'loading reader…':'載入解析元件…');const X=await loadXLSX();
+    stage(UI.lang==='en'?'reading…':'讀取中…');const buf=await file.arrayBuffer();
+    stage(UI.lang==='en'?'parsing…':'解析中…');const wb=X.read(buf,{type:'array'});
+    const names=wb.SheetNames;const pick=names.find(n=>/F溫室色花(出貨預估|預估出貨)/.test(n)&&!/\(\d+\)/.test(n))||names.find(n=>/色花.*預估|預估.*色花/.test(n))||names[0];
+    IMP={file:file.name,wb,X,sheet:pick,anchor:null};renderImport();
+  }catch(err){box.innerHTML=`<div class="row"><span style="color:var(--neg)">${UI.lang==='en'?'Import failed':'匯入失敗'}：${esc(err.message)}</span><button class="btn sm" type="button" onclick="this.closest('.imp').hidden=true">${UI.lang==='en'?'Close':'關閉'}</button></div><p class="note">${UI.lang==='en'?'Nothing was changed.':'資料沒有被修改。'}</p>`;}
+}
+function renderImport(){
+  const box=$('#imp');const {wb,X}=IMP;
+  const rows=X.utils.sheet_to_json(wb.Sheets[IMP.sheet],{header:1,raw:true,defval:null});
+  const res=parseApollo(rows,IMP.anchor);IMP.res=res;
+  if(!IMP.anchor)IMP.anchor=res.weeks[0]||null;
+  const target=IMP.anchor?normWeek(IMP.anchor,curWeek()):null;IMP.target=target;
+  const old=target&&S.weeks[target];
+  const body=res.products.map(p=>{const o=old?.sup?.[p.key];const os=o?((o.prod||0)+(o.stock||0)):null;const dl=os==null?null:p.supply-Math.floor(os);const known=S.products.some(x=>x.key===p.key);
+    return `<tr><td>${esc(p.code)}</td><td>${esc(p.variety)}${known?'':' <span style="color:var(--warn)">新</span>'}</td><td>${p.prod??''}</td><td>${p.stock??''}</td><td><b>${p.supply??''}</b></td><td>${dl?`<span class="${dl>0?'up':'dn'}">${dl>0?'+':''}${dl}</span>`:''}</td><td>${p.f6??''}</td><td>${p.next??''}</td></tr>`;}).join('');
+  box.innerHTML=`<div class="row"><b>${esc(IMP.file)}</b>
+   <label>${UI.lang==='en'?'Sheet':'分頁'} <select class="sel" id="impSheet">${wb.SheetNames.map(n=>`<option${n===IMP.sheet?' selected':''}>${esc(n)}</option>`).join('')}</select></label>
+   <label>${UI.lang==='en'?'Current week':'當週'} <select class="sel" id="impAnchor">${res.weeks.map(w=>`<option${w===IMP.anchor?' selected':''}>${w}</option>`).join('')}</select></label>
+   <span class="note">${res.products.length} ${UI.lang==='en'?'products · supply = production + stock, summed then rounded down':'個品項・總供應＝當週產出＋庫存，先加總再無條件捨去'}</span>
+   <span style="margin-left:auto;display:flex;gap:6px"><button class="btn" type="button" id="impCancel">${UI.lang==='en'?'Cancel':'取消'}</button><button class="btn pri" type="button" id="impApply" ${res.products.length&&target?'':'disabled'}>${UI.lang==='en'?'Apply to ':'套用到 '}${wShort(target)}</button></span></div>
+   ${res.products.length?`<div class="tblx"><table><thead><tr><th>${t('code')}</th><th>${t('variety')}</th><th>${t('prod')}</th><th>${t('stock')}</th><th>${t('supply')}</th><th>Δ</th><th>6F</th><th>${t('next')}</th></tr></thead><tbody>${body}</tbody></table></div>`:`<p class="note" style="color:var(--neg)">${UI.lang==='en'?'No “Week” block found on this sheet. Choose another sheet.':'這個分頁找不到「Week」區塊，請改選其他分頁。'}</p>`}`;
+  $('#impSheet').onchange=e=>{IMP.sheet=e.target.value;IMP.anchor=null;renderImport();};
+  $('#impAnchor').onchange=e=>{IMP.anchor=e.target.value;renderImport();};
+  $('#impCancel').onclick=()=>{box.hidden=true;IMP=null;};
+  $('#impApply').onclick=applyImport;
+}
+function applyImport(){
+  const {res,target,file,sheet}=IMP;const wk=W(target);let newP=false;
+  res.products.forEach(p=>{if(!S.products.some(x=>x.key===p.key)){S.products.push({key:p.key,code:p.code,variety:p.variety,...prodMeta(p.code),w:64,hidden:false});newP=true;}
+    wk.sup[p.key]={prod:p.prod,stock:p.stock,f6:p.f6,next:p.next};});
+  wk.up={at:new Date().toISOString(),src:file+' · '+sheet,anchor:target};
+  if(newP)saveProducts();
+  wk._exists=false;saveWeek(target);
+  $('#imp').hidden=true;IMP=null;UI.week=target;saveUI();bump();renderWeeks();renderGrid();
+  toast((UI.lang==='en'?'Supply updated for ':'已更新供應：')+wShort(target));
+}
+/* ================= weeks ================= */
+function renderWeeks(){
+  const ups=Object.keys(S.weeks).filter(k=>S.weeks[k].up).sort();
+  const sug=suggestedWeek();const anchorW=ups.pop()||sug;
+  const set=new Set();for(let i=-2;i<=3;i++)set.add(weekAdd(anchorW,i));set.add(curWeek());set.add(sug);
+  const pend=ROLE==='admin'?pendingLines().map(l=>l.d.week):[];pend.forEach(w=>{if(w>=weekAdd(sug,-2))set.add(w);});
+  const list=[...set].sort();
+  $('#weeks').innerHTML=list.map(w=>{const m=weekMonday(w);const e=new Date(m);e.setUTCDate(e.getUTCDate()+6);const np=pend.filter(x=>x===w).length;
+    return `<button type="button" class="wk${w===curWeek()?' cur':''}${w===sug?' sug':''}" data-w="${w}"><b>${wShort(w)}${np?`<span class="badge">${np}</span>`:''}</b><small>${m.getUTCMonth()+1}/${m.getUTCDate()}–${e.getUTCMonth()+1}/${e.getUTCDate()}</small><i>${w===sug?(UI.lang==='en'?'suggested':'建議週'):S.weeks[w]?.up?(UI.lang==='en'?'forecast':'已上傳'):'&nbsp;'}</i></button>`;}).join('');
+  const cur=$('#weeks .cur');cur&&cur.scrollIntoView({inline:'center',block:'nearest'});
+}
+function gotoWeek(w){UI.week=w;saveUI();bump();renderWeeks();renderView();}
+/* ================= pending ================= */
+function lineAlloc(d){
+  if(ROLE==='req'){const v=VIEWS[d.week];const r=v?.replies?.[d.ticket];let a=r?(r[d.key]??null):null;if(a!=null&&(d.pendingReduce||(d.reduceTs&&String(d.reduceTs)>String(v.at||''))))a=Math.min(a,d.qty||0);return a;}
+  const wk=S.weeks[d.week];if(!wk)return null;const row=wk.rows.find(r=>rowMatch(r,d));if(!row)return null;
+  if(d.variety==='Any'){let s=null;for(const p of S.products)if(p.code===d.code){const v=effA(d.week,row.id,p.key);if(v!=null)s=(s||0)+v;}return s;}
+  return effA(d.week,row.id,d.key);
+}
+function lineStatus(d){const known=ROLE==='req'||d.variety==='Any'||S.products.some(p=>p.key===d.key);if(!known)return 'map';const a=lineAlloc(d);if(a==null)return 'wait';if(a<(d.qty||0))return 'part';return 'done';}
+function pendingLines(){return S.demands.filter(d=>!d.cancelled).map(d=>({d,st:lineStatus(d),a:lineAlloc(d)})).filter(l=>l.st!=='done');}
+function updateBadge(){const n=pendingLines().filter(l=>l.d.week===curWeek()).length;const b=$('#tabs [data-v="pending"] .badge');if(b){b.textContent=n;b.hidden=!n;}}
+const ST={wait:['wait','未回覆','Waiting'],part:['part','部分','Partial'],done:['done','已回覆','Replied'],map:['map','待對應品項','Needs mapping']};
+const stTag=s=>`<span class="st ${ST[s][0]}">${UI.lang==='en'?ST[s][2]:ST[s][1]}</span>`;
+let PF={owner:'',st:'open',all:false};
+function renderPending(){
+  const wkId=curWeek();
+  let lines=S.demands.filter(d=>!d.cancelled&&(PF.all||d.week===wkId)).map(d=>({d,st:lineStatus(d),a:lineAlloc(d)}));
+  if(PF.owner)lines=lines.filter(l=>l.d.owner===PF.owner);
+  if(PF.st==='open')lines=lines.filter(l=>l.st!=='done');else if(PF.st!=='all')lines=lines.filter(l=>l.st===PF.st);
+  lines.sort((a,b)=>(a.d.code+a.d.variety).localeCompare(b.d.code+b.d.variety)||a.d.region.localeCompare(b.d.region));
+  const notes=S.notices.filter(n=>PF.all||n.week===wkId).slice(-15).reverse();
+  $('#pendingIn').innerHTML=`
+  ${notes.length?`<div class="panel"><h2>${UI.lang==='en'?'Change notices':'異動通知'}</h2><div class="ntc">${notes.map(n=>`<div><time>${String(n.ts).slice(5,10).replace('-','/')} ${String(n.ts).slice(11,16)}</time>${esc(n.text)}</div>`).join('')}</div></div>`:''}
+  <div class="panel"><h2>${t('pending')} · ${PF.all?(UI.lang==='en'?'all weeks':'全部週次'):wShort(wkId)}</h2>
+  <div class="filters"><select class="sel" id="pfOwner"><option value="">${t('owner')}：${t('all')}</option>${PEOPLE.map(p=>`<option${p.name===PF.owner?' selected':''}>${p.name}</option>`).join('')}</select>
+  <select class="sel" id="pfSt">${[['open',UI.lang==='en'?'Open (not fully replied)':'未完成（未回覆／部分／待對應）'],['wait',ST.wait[UI.lang==='en'?2:1]],['part',ST.part[UI.lang==='en'?2:1]],['map',ST.map[UI.lang==='en'?2:1]],['done',ST.done[UI.lang==='en'?2:1]],['all',t('all')]].map(([v,l])=>`<option value="${v}"${v===PF.st?' selected':''}>${l}</option>`).join('')}</select>
+  <label class="tg"><input type="checkbox" id="pfAll"${PF.all?' checked':''}>${UI.lang==='en'?'All weeks':'所有週次'}</label><span class="note">${lines.length} ${UI.lang==='en'?'lines · click a line to jump to its cell':'筆・點一列可跳到配貨表對應格'}</span></div>
+  <div class="tblx"><table class="list"><thead><tr><th>${UI.lang==='en'?'Wk':'週'}</th><th>${t('owner')}</th><th>${t('region')}</th><th>${t('customer')}</th><th>${t('code')}</th><th>${t('variety')}</th><th class="n">${t('demand')}</th><th class="n">${t('allocated')}</th><th class="n">${UI.lang==='en'?'Unfilled':'未滿足'}</th><th>${t('status')}</th><th>${t('remark')}</th></tr></thead>
+  <tbody>${lines.map(l=>`<tr class="click" data-d="${l.d.id}"><td>${wShort(l.d.week)}</td><td>${esc(l.d.owner)}</td><td>${esc(rgName(l.d.region))}</td><td>${esc(l.d.customer||'—')}</td><td><b>${esc(l.d.code)}</b></td><td>${esc(l.d.variety)}</td><td class="n">${fmt(l.d.qty)}${S.products.find(p=>p.key===l.d.key)?.unit==='箱'?' 箱':''}</td><td class="n">${l.a??'—'}</td><td class="n">${fmt(Math.max(0,(l.d.qty||0)-(l.a||0)))}</td><td>${stTag(l.st)}</td><td class="note">${esc(l.d.remark)}</td></tr>`).join('')||`<tr><td colspan="11" class="note">${UI.lang==='en'?'Nothing pending.':'沒有待處理的需求。'}</td></tr>`}</tbody></table></div></div>`;
+  $('#pfOwner').onchange=e=>{PF.owner=e.target.value;renderPending();};
+  $('#pfSt').onchange=e=>{PF.st=e.target.value;renderPending();};
+  $('#pfAll').onchange=e=>{PF.all=e.target.checked;renderPending();};
+  $('#pendingIn').querySelectorAll('tr[data-d]').forEach(tr=>tr.onclick=()=>jumpTo(S.demands.find(d=>d.id===tr.dataset.d)));
+}
+function jumpTo(d){
+  UI.week=d.week;UI.view='grid';const key=d.key;
+  let p=getProd(key);if(p&&p.virtual&&!anyCodes().includes(p.code))p=p.members[0];
+  if(p&&p.virtual&&UI.hiddenAny)delete UI.hiddenAny[p.code];
+  if(!p){S.products.push({key,code:d.code,variety:d.variety,...prodMeta(d.code),w:64,hidden:false,extra:true});p=S.products.at(-1);saveProducts();toast(UI.lang==='en'?'Added as a new column for mapping':'已加入為新欄，可直接修改花色/品種完成對應');}
+  if(p.hidden){p.hidden=false;saveProducts();}
+  UI.q='';$('#q').value='';UI.hideZero=false;$('#fZero').checked=false;
+  const wk=W(d.week);let row=wk.rows.find(r=>rowMatch(r,d));
+  if(!row){row={id:uid('r'),region:d.region,customer:d.customer||''};wk.rows.push(row);saveWeek(d.week,{rows:wk.rows});}
+  UI.collapsed[d.region]=false;UI.owner='';$('#fOwner').value='';
+  ACT={k:p.key,row:row.id,grade:'normal'};bump();
+  renderWeeks();renderView();
+  const inp=grid().querySelector(p.virtual?`td[data-anyk][data-row="${row.id}"][data-k="${CSS.escape(p.key)}"]`:`input[data-f="alloc"][data-row="${row.id}"][data-k="${CSS.escape(p.key)}"]`);
+  if(inp){inp.focus();inp.scrollIntoView({block:'center',inline:'center'});}
+}
+/* ================= standing admin ================= */
+function renderStd(){
+  const wkId=curWeek();ensureStandingRows(wkId);const AI=autoInfo(wkId);const wk=W(wkId);
+  const items=[...S.standing].sort((a,b)=>(TIER[a.type]-TIER[b.type])||((a.order||0)-(b.order||0)));
+  const prodOpts=cur=>`<optgroup label="${UI.lang==='en'?'Any variety':'不指定品種（Any）'}">${anyCodes().map(c=>`<option value="${c}|Any"${c+'|Any'===cur?' selected':''}>${esc(c)} · Any（${anyMembers(c).map(m=>esc(m.variety)).join(' / ')}）</option>`).join('')}</optgroup><optgroup label="${UI.lang==='en'?'Specific variety':'指定品種'}">`+S.products.map(p=>`<option value="${esc(p.key)}"${p.key===cur?' selected':''}>${esc(p.code)} · ${esc(p.variety)}</option>`).join('')+'</optgroup>'+(cur&&!getProd(cur)?`<option value="${esc(cur)}" selected>${esc(cur)}</option>`:'');
+  const custList=Object.keys(S.custMem).sort();
+  const row=it=>{const inf=AI.items[it.id]||{};const applies=standingFor(wkId).includes(it);const unit=getProd(it.key)?.unit||'枝';
+    const r=inf.row&&wk.rows.find(x=>x.id===inf.row);const eff=r?effA(wkId,r.id,it.key):null;
+    let st='';if(!applies)st=`<span class="st">${UI.lang==='en'?'not this week':'本週不適用'}</span>`;else if(inf.anyTarget!=null)st=(eff||0)>=inf.anyTarget?`<span class="st done">${UI.lang==='en'?'split':'已分配品種'}</span>`:`<span class="st part">${UI.lang==='en'?'split into varieties':'待分配到品種'}</span>`;else if(inf.manual!==undefined)st=`<span class="st part">${UI.lang==='en'?'changed this week':'本週已修改'}</span> <button class="btn sm" type="button" data-sact="restore" data-id="${it.id}">${UI.lang==='en'?'Restore':'恢復預設'}</button>`;else if(inf.cut)st=`<span class="st map">${UI.lang==='en'?'short supply':'供應不足減量'}</span>`;else st=`<span class="st done">${UI.lang==='en'?'auto':'依預設'}</span>`;
+    return `<tr data-id="${it.id}"><td class="mvc"><button class="btn sm" type="button" data-sact="up" aria-label="上移">▲</button><button class="btn sm" type="button" data-sact="dn" aria-label="下移">▼</button></td>
+    <td><select data-sf="type"><option value="fixed"${it.type==='fixed'?' selected':''}>${UI.lang==='en'?'Standing order':'固定單'}</option><option value="reserve"${it.type==='reserve'?' selected':''}>${UI.lang==='en'?'Long-term reserve':'長期預留'}</option></select></td>
+    <td><select data-sf="region">${REGIONS.map(x=>`<option value="${x.id}"${x.id===it.region?' selected':''}>${esc(rgName(x.id))}</option>`).join('')}</select></td>
+    <td><input data-sf="customer" list="stdCust" value="${esc(it.customer||'')}" placeholder="（地區總量）"></td>
+    <td><select data-sf="key"><option value="">—</option>${prodOpts(it.key)}</select></td>
+    <td><input data-sf="qty" class="num" inputmode="numeric" value="${it.qty??''}"></td><td class="note">${unit==='箱'?t('boxes'):t('stems')}</td>
+    <td><input data-sf="from" class="wkin" value="${esc(wShort(it.from)||'')}" placeholder="W44"></td><td><input data-sf="to" class="wkin" value="${esc(wShort(it.to)||'')}" placeholder="${UI.lang==='en'?'open':'不限'}"></td>
+    <td><input type="checkbox" data-sf="active"${it.active!==false?' checked':''} aria-label="啟用"></td>
+    <td class="n">${applies?(inf.norow?'—':fmt(inf.auto??inf.anyTarget)):'—'}</td><td class="n">${applies?(eff??'—'):'—'}</td><td>${st}</td>
+    <td><button class="btn sm" type="button" data-sact="del" aria-label="刪除">✕</button></td></tr>`;};
+  $('#stdIn').innerHTML=`<div class="panel"><h2>${t('std')} · ${UI.lang==='en'?'preview for':'本週預覽'} ${wShort(wkId)}</h2>
+   <p class="note">${UI.lang==='en'?'Priority: standing orders (Japan, Hasfarm) first, then long-term reserves (e.g. Domus, Black Tulip). Every week fills these automatically. If you change a filled cell in the allocation table, that change applies to that week only; other weeks keep the defaults here. When supply runs short, lower-priority lines are filled with what is left.':'滿足順位：先固定單（日本、Hasfarm），再長期預留（如 Domus、Black Tulip）；同類依列表上下順序。每個週次自動帶入；在配貨表修改帶入值只影響當週，其他週仍依這裡的數量。供應不足時，順位較後的項目只帶入剩餘量。'}</p>
+   <div class="filters"><button class="btn" type="button" data-sact="addFixed">${UI.lang==='en'?'+ Standing order':'＋ 固定單'}</button><button class="btn" type="button" data-sact="addRes">${UI.lang==='en'?'+ Long-term reserve':'＋ 長期預留'}</button></div>
+   <datalist id="stdCust">${custList.map(c=>`<option value="${esc(c)}">`).join('')}</datalist>
+   <div class="tblx"><table class="list std"><thead><tr><th>${UI.lang==='en'?'Order':'順位'}</th><th>${UI.lang==='en'?'Type':'類型'}</th><th>${t('region')}</th><th>${t('customer')}</th><th>${UI.lang==='en'?'Product':'品項'}</th><th>${t('qty')}</th><th></th><th>${UI.lang==='en'?'From':'起始週'}</th><th>${UI.lang==='en'?'To':'結束週'}</th><th>${UI.lang==='en'?'On':'啟用'}</th><th class="n">${UI.lang==='en'?'Filled':'本週帶入'}</th><th class="n">${UI.lang==='en'?'Actual':'本週實際'}</th><th>${t('status')}</th><th></th></tr></thead>
+   <tbody>${items.map(row).join('')||`<tr><td colspan="14" class="note">${UI.lang==='en'?'No standing orders or reserves yet.':'尚未設定固定單或長期預留。'}</td></tr>`}</tbody></table></div></div>`;
+  const root=$('#stdIn');
+  root.querySelectorAll('[data-sf]').forEach(el=>el.onchange=()=>{const it=S.standing.find(x=>x.id===el.closest('tr').dataset.id);const f=el.dataset.sf;
+    if(f==='qty'){const q=parseQty(el.value);if(q===undefined){el.value=it.qty??'';toast(UI.lang==='en'?'Numbers only':'只能輸入數字');return;}it.qty=q??0;}
+    else if(f==='from'||f==='to'){const w=normWeek(el.value);if(w===null){el.value=wShort(it[f])||'';toast('格式：W44 或 2026-W44');return;}it[f]=w||null;}
+    else if(f==='active')it.active=el.checked;
+    else if(f==='customer'){it.customer=el.value.trim();const m=S.custMem[it.customer];if(m&&m.region)it.region=m.region;}
+    else it[f]=el.value;
+    saveStanding();bump();renderStd();});
+  root.querySelectorAll('[data-sact]').forEach(b=>b.onclick=()=>{const a=b.dataset.sact;const id=b.closest('tr')?.dataset.id;const it=S.standing.find(x=>x.id===id);
+    if(a==='addFixed'||a==='addRes'){const type=a==='addFixed'?'fixed':'reserve';const n={id:uid('st'),type,region:type==='fixed'?'JP':'MES',customer:type==='fixed'?'日本固定單':'',key:'',qty:0,from:curWeek(),to:null,active:true,order:Math.max(0,...S.standing.map(x=>x.order||0))+1};S.standing.push(n);saveStanding();bump();renderStd();return;}
+    if(a==='del'){const i=S.standing.indexOf(it);S.standing.splice(i,1);saveStanding();bump();renderStd();toast(UI.lang==='en'?'Deleted':'已刪除',()=>{S.standing.splice(i,0,it);saveStanding();bump();renderStd();});return;}
+    if(a==='up'||a==='dn'){const same=items.filter(x=>x.type===it.type);const i=same.indexOf(it);const j=a==='up'?i-1:i+1;if(j<0||j>=same.length)return;same.forEach((x,ix)=>x.order=ix);[same[i].order,same[j].order]=[same[j].order,same[i].order];saveStanding();bump();renderStd();return;}
+    if(a==='restore'){const inf=autoInfo(curWeek()).items[it.id];if(!inf||!inf.row)return;const wk=W();(wk.alloc[inf.row]=wk.alloc[inf.row]||{})[it.key]='auto';bump();saveWeek(curWeek(),{alloc:{[inf.row]:{[it.key]:'auto'}}});renderStd();}});
+}
+/* ================= request (demand) view ================= */
+let RQ=null;
+function reqWho(){return ROLE==='admin'?PP[UI.reqWho]:(PP[ME]||null);}
+function latestSupplyWeek(wkId){const ups=Object.keys(S.weeks).filter(k=>S.weeks[k].up).sort();if(S.weeks[wkId]?.up)return {w:wkId,field:'cur'};const prev=ups.filter(k=>k<wkId).pop();if(prev&&weekAdd(prev,1)===wkId)return {w:prev,field:'next'};return {w:ups.pop()||null,field:'cur'};}
+function reqProducts(wkId){
+  if(ROLE==='req'){const ks=Object.keys(VIEWS).filter(k=>k!=='_cfg'&&VIEWS[k].products&&VIEWS[k].products.length).sort();const v=VIEWS[wkId]&&VIEWS[wkId].products?VIEWS[wkId]:(ks.length?VIEWS[ks.filter(k=>k<=wkId).pop()||ks[ks.length-1]]:null);return {list:v?v.products.map(p=>({...p,members:p.members||undefined})):FIXED.map(f=>({...f,fixed:true})),src:v?v.src:{w:null,field:'cur'}};}
+  const src=latestSupplyWeek(wkId);const wk=src.w&&S.weeks[src.w];
+  const list=FIXED.map(f=>({...f,fixed:true}));
+  for(const p of S.products){if(FIXED.some(f=>f.key===p.key))continue;const s=wk?.sup?.[p.key];if(!s)continue;const v=src.field==='next'?(s.next||0):((s.prod||0)+(s.stock||0));if(v>0)list.push(p);}
+  const out=[];const seenAny=new Set();
+  for(const p of list){if(ANY_CODES.includes(p.code)&&!seenAny.has(p.code)&&list.filter(x=>x.code===p.code).length>1){seenAny.add(p.code);out.push({key:p.code+'|Any',code:p.code,variety:'Any',grade:p.grade,unit:p.unit,any:true,members:list.filter(x=>x.code===p.code).map(x=>x.variety)});}out.push(p);}
+  return {list:out,src};
+}
+function newForm(who){const reg=who.regions[0];return {ticket:null,owner:who.name,region:reg,customer:RG[reg].cust||'',shipDate:'',remark:'',qty:{},free:[],files:[]};}
+function shipInfo(f){const d=dateUTC(f.shipDate);if(!d)return {ship:null,sup:f.week||curWeek()};const ship=isoOf(d);let sup=ship;if(f.region==='HF'&&d.getUTCDay()===6)sup=weekAdd(ship,1);return {ship,sup};}
+function renderReq(){
+  const who=reqWho();
+  if(!RQ||RQ.owner!==who.name)RQ=newForm(who);
+  const si=shipInfo(RQ);const wkId=si.sup;
+  const {list,src}=reqProducts(wkId);
+  const tks=Object.entries(S.tickets).filter(([,tt])=>tt.owner===who.name&&!tt.cancelled).sort((a,b)=>String(b[1].week).localeCompare(a[1].week));
+  const rgOpts=[...who.regions,'OT'].concat(ROLE==='admin'?REGIONS.map(r=>r.id).filter(id=>!who.regions.includes(id)&&id!=='OT'):[]);
+  const custList=Object.keys(S.custMem).sort();
+  const q=(RQ.search||'').toLowerCase();
+  const replyOf=key=>{if(!RQ.ticket)return '';const d=S.demands.find(d=>d.ticket===RQ.ticket&&d.key===key&&!d.cancelled);if(!d)return '';const a=lineAlloc(d);return a==null?`<span class="note">${UI.lang==='en'?'waiting':'待回覆'}</span>`:fmt(a);};
+  const rows=list.filter(p=>!q||p.code.toLowerCase().includes(q)||p.variety.toLowerCase().includes(q)).map(p=>`<tr class="${p.fixed?'fx':''} ${p.any?'anyrow':''}"><td class="code">${esc(p.code)}</td><td class="vr">${p.any?`Any <span class="note">(${p.members.map(esc).join(' / ')})</span>`:esc(p.variety)}</td><td class="gr">${esc(p.grade)}</td><td><input class="qty" type="text" inputmode="numeric" data-q="${esc(p.key)}" value="${RQ.qty[p.key]??''}" placeholder=" " aria-label="${esc(p.code)} ${t('qty')}"></td><td class="gr">${p.unit==='箱'?t('boxes'):t('stems')}</td><td class="rp">${replyOf(p.key)}</td></tr>`).join('');
+  const extraKeys=Object.keys(RQ.qty).filter(k=>!list.some(p=>p.key===k));
+  const extra=extraKeys.map(k=>{const [c,...v]=k.split('|');return `<tr><td class="code">${esc(c)}</td><td class="vr">${esc(v.join('|'))}</td><td class="gr"></td><td><input class="qty" type="text" inputmode="numeric" data-q="${esc(k)}" value="${RQ.qty[k]??''}" placeholder=" "></td><td class="gr">${t('stems')}</td><td class="rp">${replyOf(k)}</td></tr>`;}).join('');
+  const free=RQ.free.map((f,i)=>`<tr><td><input class="tx" data-fr="${i}" data-ff="code" value="${esc(f.code)}" placeholder="${t('code')}"></td><td><input class="tx" data-fr="${i}" data-ff="variety" value="${esc(f.variety)}" placeholder="${t('variety')} / 原文"></td><td><input class="tx" data-fr="${i}" data-ff="remark" value="${esc(f.remark||'')}" placeholder="${t('remark')}"></td><td><input class="qty" type="text" inputmode="numeric" data-fr="${i}" data-ff="qty" value="${f.qty??''}" placeholder=" "></td><td class="gr">${t('stems')}</td><td><button class="btn sm" type="button" data-frx="${i}" aria-label="刪除">✕</button></td></tr>`).join('');
+  $('#reqIn').innerHTML=`
+  <div class="panel"><h2>${t('myTickets')} · ${esc(who.name)}</h2>
+   <div class="tickets"><button type="button" class="tk${!RQ.ticket?' on':''}" data-tk=""><b>${t('newTicket')}</b><small>${UI.lang==='en'?'blank form':'空白表單'}</small></button>${tks.map(([tk,tt])=>{const ls=S.demands.filter(d=>d.ticket===tk&&!d.cancelled);const tot=ls.reduce((s,l)=>s+(l.qty||0),0);const open=ls.filter(l=>lineStatus(l)!=='done').length;return `<button type="button" class="tk${RQ.ticket===tk?' on':''}" data-tk="${tk}"><b>${wShort(tt.week)} · ${esc(tt.customer||rgName(tt.region))}</b><small>${ls.length} ${UI.lang==='en'?'items':'項'} · ${fmt(tot)} · ${open?(UI.lang==='en'?open+' open':open+' 項待回覆'):(UI.lang==='en'?'all replied':'全部已回覆')}</small></button>`;}).join('')}</div></div>
+  <div class="panel"><h2>${RQ.ticket?(UI.lang==='en'?'Edit request':'修改需求'):(UI.lang==='en'?'New request':'新增需求')}</h2>
+   <div class="form">
+    <label>${t('region')}<select id="rqRegion">${rgOpts.map(id=>`<option value="${id}"${id===RQ.region?' selected':''}>${esc(rgName(id))}</option>`).join('')}</select></label>
+    <label>${t('customer')}（${UI.lang==='en'?'optional':'選填'}）<input id="rqCust" list="custList" value="${esc(RQ.customer)}" placeholder="${UI.lang==='en'?'blank = regional total':'空白＝地區總量'}"><datalist id="custList">${custList.map(c=>`<option value="${esc(c)}">`).join('')}</datalist></label>
+    <label>${t('shipDate')}<input id="rqDate" type="date" value="${esc(RQ.shipDate)}"></label>
+    <label>${t('shipWk')} / ${t('supWk')}<span class="wkout">${si.ship?wShort(si.ship):'—'} / <b>${wShort(wkId)}</b>${si.ship&&si.ship!==wkId?` <span class="note">(${UI.lang==='en'?'Saturday Hasfarm uses next week':'Hasfarm 週六出貨用下週產出'})</span>`:''}</span></label>
+    <label>${t('remark')}<input id="rqRemark" value="${esc(RQ.remark)}"></label>
+   </div></div>
+  <div class="panel">
+   <div class="filters"><input class="q" id="rqSearch" type="search" placeholder="${t('search')}" value="${esc(RQ.search||'')}">
+    <span class="note">${!src.w?(UI.lang==='en'?'No forecast uploaded yet — fixed items only; add others at the end.':'尚未上傳預估表，先列固定品項；其他品項可在表末自行新增。'):src.field==='next'?(UI.lang==='en'?`List from ${wShort(src.w)} forecast (next week) — this week not uploaded yet`:`${wShort(wkId)} 尚未上傳，暫用 ${wShort(src.w)} 預估表的下週產出`):(UI.lang==='en'?`List from ${wShort(src.w)} forecast`:`品項來自 ${wShort(src.w)} 預估表`)}</span></div>
+   <div class="hint">${UI.lang==='en'?'Dyed / Spray (DY/, SP/, Mix): add them into their base. Default base is White A+ — e.g. White 30 + DY/MCA 6 + DY/RBU 6 → enter 42 on W (A+) and note the breakdown. Mix boxes: list each material × boxes.':'染色／噴漆（Dyed、DY/、SP/、Spray、Mix）請併入基底數量：預設 White Base（A+），例如 White 30＋DY/MCA 6＋DY/RBU 6 → W (A+) 填 42，備註寫組成。Mix 箱請拆成各材料×箱數。PUR、LP 需求請含同基底染色花。'}</div>
+   <div class="drop"><button class="btn" type="button" id="rqXls">${UI.lang==='en'?'Read order Excel':'讀取訂單 Excel'}</button><button class="btn" type="button" id="rqImg">${UI.lang==='en'?'Attach image':'附加圖片'}</button><input type="file" id="rqXlsF" accept=".xlsx,.xls" hidden><input type="file" id="rqImgF" accept="image/*" hidden><span id="rqUpMsg">${UI.lang==='en'?'Excel fills the quantities below for you to check.':'Excel 會自動填入下方數量，送出前可再修改。'}</span>${RQ.files.map(f=>`<img src="${f}" alt="附件">`).join('')}</div>
+   <div class="tblx"><table class="req"><thead><tr><th>${t('code')}</th><th>${t('variety')}</th><th>${t('grade')}</th><th>${t('qty')}</th><th></th><th style="text-align:right">${t('reply')}</th></tr></thead><tbody>${rows}${extra}${free}<tr><td colspan="6" style="height:40px"><button class="btn" type="button" id="rqAddFree">${t('addFree')}</button></td></tr></tbody></table></div>
+   <div class="reqbar"><span id="rqTot"></span><span class="note">${esc(rgName(RQ.region))}${RQ.customer?' · '+esc(RQ.customer):''} · ${wShort(wkId)}</span><span style="margin-left:auto;display:flex;gap:6px">${RQ.ticket?`<button class="btn" type="button" id="rqCancel">${UI.lang==='en'?'Cancel request':'取消整張需求'}</button>`:''}<button class="btn pri" type="button" id="rqSubmit">${RQ.ticket?t('update'):t('submit')}</button></span></div>
+  </div>`;
+  refreshReqTotal(list);bindReq(list,wkId);
+}
+function bindReq(list,wkId){
+  const who=reqWho(),root=$('#reqIn');
+  root.querySelectorAll('[data-tk]').forEach(b=>b.onclick=()=>{const tk=b.dataset.tk;if(!tk){RQ=newForm(who);}else{const tt=S.tickets[tk];RQ={ticket:tk,week:tt.week,owner:who.name,region:tt.region,customer:tt.customer||'',shipDate:tt.shipDate||'',remark:'',qty:{},free:[],files:[]};(tt.lines||[]).filter(l=>!l.cancelled).forEach(l=>{RQ.qty[l.key]=l.qty;});}renderReq();});
+  $('#rqRegion').onchange=e=>{RQ.region=e.target.value;if(!RQ.customer&&RG[RQ.region].cust)RQ.customer=RG[RQ.region].cust;renderReq();};
+  $('#rqCust').onchange=e=>{RQ.customer=e.target.value.trim();const m=S.custMem[RQ.customer];if(m&&m.region)RQ.region=m.region;renderReq();};
+  $('#rqDate').onchange=e=>{RQ.shipDate=e.target.value;renderReq();};
+  $('#rqRemark').onchange=e=>{RQ.remark=e.target.value;};
+  $('#rqSearch').oninput=e=>{RQ.search=e.target.value;const pos=e.target.selectionStart;renderReq();const s=$('#rqSearch');s.focus();s.setSelectionRange(pos,pos);};
+  root.querySelectorAll('input[data-q]').forEach(i=>{i.onchange=()=>{const v=parseQty(i.value);if(v===undefined){i.value=RQ.qty[i.dataset.q]??'';toast(UI.lang==='en'?'Numbers only':'只能輸入數字');return;}if(v==null)delete RQ.qty[i.dataset.q];else RQ.qty[i.dataset.q]=v;i.value=v??'';refreshReqTotal(list);};
+    i.onkeydown=e=>{if(e.key==='Enter'||e.key==='ArrowDown'||e.key==='ArrowUp'){const all=[...root.querySelectorAll('input.qty')];const n=all[all.indexOf(i)+(e.key==='ArrowUp'?-1:1)];if(n){e.preventDefault();i.dispatchEvent(new Event('change'));n.focus();n.select();}}};
+    i.onfocus=()=>i.select();});
+  root.querySelectorAll('[data-fr]').forEach(i=>i.onchange=()=>{const f=RQ.free[+i.dataset.fr];if(i.dataset.ff==='qty'){const v=parseQty(i.value);f.qty=v==null||v===undefined?null:v;i.value=f.qty??'';refreshReqTotal(list);}else f[i.dataset.ff]=i.value;});
+  root.querySelectorAll('[data-frx]').forEach(b=>b.onclick=()=>{RQ.free.splice(+b.dataset.frx,1);renderReq();});
+  $('#rqAddFree').onclick=()=>{RQ.free.push({code:'',variety:'',qty:null,remark:''});renderReq();const ins=root.querySelectorAll('[data-ff="code"]');ins[ins.length-1]?.focus();};
+  $('#rqSubmit').onclick=()=>submitReq(wkId);
+  const cb=$('#rqCancel');if(cb)cb.onclick=()=>{const tt=S.tickets[RQ.ticket];tt.cancelled=true;tt.ts=nowISO();
+    tt.releaseTs=nowISO();
+    rebuildDemands();saveTicket(RQ.ticket);
+    addNotice({id:uid('n'),ts:nowISO(),week:tt.week,text:`${who.name} 取消 ${tt.customer||rgName(tt.region)} ${wShort(tt.week)} 需求（${(tt.lines||[]).length} 項，保留歷史）`});
+    RQ=newForm(who);bump();renderReq();toast(UI.lang==='en'?'Request cancelled (history kept)':'已取消，歷史紀錄保留');};
+  $('#rqXls').onclick=()=>$('#rqXlsF').click();$('#rqImg').onclick=()=>$('#rqImgF').click();
+  $('#rqXlsF').onchange=e=>{const f=e.target.files[0];e.target.value='';if(f)readOrderExcel(f,list);};
+  $('#rqImgF').onchange=e=>{const f=e.target.files[0];e.target.value='';if(!f)return;const r=new FileReader();r.onload=()=>{RQ.files.push(r.result);renderReq();$('#rqUpMsg').textContent=UI.lang==='en'?'Image attached for reference. Automatic reading of images is not available yet; please type the quantities.':'圖片已附加供參考。圖片自動辨識尚未開放，請手動填入數量。';};r.readAsDataURL(f);};
+}
+function refreshReqTotal(list){let stems=0,boxes=0;for(const [k,v] of Object.entries(RQ.qty)){if(v==null)continue;const p=list.find(p=>p.key===k)||S.products.find(p=>p.key===k);if(p?.unit==='箱')boxes+=v;else stems+=v;}RQ.free.forEach(f=>{if(f.qty)stems+=f.qty;});const b=$('#rqTot');if(b)b.innerHTML=`${t('total')} <b>${fmt(stems)}</b> ${t('stems')}${boxes?` · <b>${fmt(boxes)}</b> ${t('boxes')}`:''}`;}
+const nowISO=()=>{const d=new Date();const tz=-d.getTimezoneOffset();const p=n=>String(Math.floor(Math.abs(n))).padStart(2,'0');return new Date(d.getTime()+tz*6e4).toISOString().slice(0,19)+(tz>=0?'+':'-')+p(tz/60)+':'+p(tz%60);};
+function submitReq(wkId){
+  const who=reqWho();
+  const items=Object.entries(RQ.qty).filter(([,v])=>v!=null).map(([key,qty])=>{const [code,...v]=key.split('|');return {key,code,variety:v.join('|'),qty,remark:''};});
+  RQ.free.filter(f=>(f.code||f.variety)&&f.qty!=null).forEach(f=>{const code=f.code.trim()||'?',variety=normVariety(f.variety)||'?';items.push({key:code+'|'+variety,code,variety,qty:f.qty,remark:f.remark||''});});
+  if(!items.length){toast(UI.lang==='en'?'Enter at least one quantity':'請至少填一個數量');return;}
+  if(RQ.remark)items.forEach(i=>{if(!i.remark)i.remark=RQ.remark;});
+  const tk=RQ.ticket||uid('t');
+  const old=RQ.ticket?(S.tickets[tk].lines||[]).filter(l=>!l.cancelled).map(l=>({...l,ticket:tk,week:S.tickets[tk].week,region:S.tickets[tk].region,customer:S.tickets[tk].customer||''})):[];
+  if(RQ.customer&&ROLE==='admin'){S.custMem[RQ.customer]={region:RQ.region,owner:who.name};saveCust(RQ.customer);}
+  const changes=[];
+  const lines=[];
+  for(const it of items){
+    const o=old.find(d=>d.key===it.key);
+    if(o){
+      if(o.qty!==it.qty){
+        const a=lineAlloc(o);
+        if(it.qty<o.qty&&a!=null&&it.qty<a&&o.variety!=='Any'){changes.push(`${o.code} ${o.variety} ${o.qty}→${it.qty}（低於已配 ${a}，已自動同意並改配 ${it.qty}）`);}
+        else if(it.qty>o.qty)changes.push(`${o.code} ${o.variety} ${o.qty}→${it.qty}（增加，待配貨人回覆；已配維持 ${a??'—'}）`);
+        else changes.push(`${o.code} ${o.variety} ${o.qty}→${it.qty}`);
+      }
+      const nl={id:o.id,key:it.key,code:it.code,variety:it.variety,qty:it.qty,remark:it.remark||o.remark||'',ts:o.qty!==it.qty?nowISO():(o.ts||nowISO())};if(it.qty<o.qty)nl.reduceTs=nowISO();else if(o.reduceTs)nl.reduceTs=o.reduceTs;lines.push(nl);
+    }else{lines.push({id:uid('d'),key:it.key,code:it.code,variety:it.variety,qty:it.qty,remark:it.remark||'',ts:nowISO()});if(RQ.ticket)changes.push(`新增 ${it.code} ${it.variety} ${it.qty}`);}
+  }
+  for(const o of old){if(!items.some(i=>i.key===o.key)){const a=lineAlloc(o);lines.push({...o,cancelled:true,releaseTs:nowISO()});changes.push(`取消 ${o.code} ${o.variety}${a?`（釋回已配 ${a}）`:''}`);}}
+  const prevAck=(S.tickets[tk]||{}).ack;
+  S.tickets[tk]={owner:who.name,week:wkId,shipDate:RQ.shipDate||'',region:RQ.region,customer:RQ.customer||'',cancelled:false,ts:nowISO(),lines:lines.map(({week,region,customer,pendingReduce,ticket,shipDate,owner,...l})=>l)};if(prevAck)S.tickets[tk].ack=prevAck;
+  rebuildDemands();bump();
+  saveTicket(tk);
+  const label=`${who.name} · ${RQ.customer||rgName(RQ.region)} ${wShort(wkId)}`;
+  addNotice({id:uid('n'),ts:nowISO(),week:wkId,text:RQ.ticket?`${label} 修改需求：${changes.join('；')||'無數量變更'}`:`${label} 新增需求 ${items.length} 項`});
+  RQ.ticket=tk;RQ.week=wkId;RQ.free=[];renderReq();updateBadge();
+  toast(UI.lang==='en'?`Submitted · ticket ${tk.slice(-6).toUpperCase()} · ${items.length} items`:`已送出・票號 ${tk.slice(-6).toUpperCase()}・${items.length} 項`);
+}
+/* order Excel → form */
+const COLOR_NAMES={'white':'W','w':'W','party white':'W','purple':'PUR','pur':'PUR','light pink':'LP','lp':'LP','black':'B','pink':'P','fuller sunset':'FS',"fuller's sunset":'FS','fs':'FS','md-orange':'MD-O','md orange':'MD-O','medium orange':'MD-O','md-tangerine':'MD-T','medium tangerine':'MD-T','big lip white':'BL-W','salmon pink':'SMP','orange yellow lip':'OYL','white with stripe':'WST','yellow with strip':'MD-YST','yellow with stripe':'MD-YST','rri':'RRI','rra':'RRA','green':'GREEN'};
+function mapOrderLine(color,variety,grade,list){
+  let raw=String(color||'').replace(/\s+/g,' ').trim();if(!raw)return null;
+  const lo=raw.toLowerCase();const party=/party|pb/i.test(String(grade||''))||/party/i.test(raw);
+  if(/\bxxl\b|extra long/.test(lo)){if(/lp|light pink/.test(lo))return {key:'XXL-LP|CL243',box:true};if(/white|\bw\b/.test(lo))return {key:'XXL-W|SRM0533',box:true};return {unmapped:true};}
+  if(/^mix$|dyed mix|^mix\b/.test(lo))return {unmapped:true,why:'Mix 需拆材料'};
+  if(/dyed|\bdy\/|\bdy\b|spray|\bsp\//.test(lo)){
+    const m=/(?:with\s+)?([\w\- ]+?)\s+base/i.exec(raw)||/\(([^)]*?)\s*base\)/i.exec(raw);const b=m?m[1].toLowerCase().trim():'';
+    if(!b||b==='white')return {key:party?'W (Party B)|SRM0533':'W (A+)|SRM0533',dyed:true};
+    if(b.includes('4775'))return {key:'4775|4775',dyed:true};if(b.includes('wst'))return {key:'WST|SRM0950',dyed:true};if(b.includes('purple'))return {key:'PUR|Any',dyed:true};
+    if(b.includes('1142'))return {key:'B|SRM1142',dyed:true};if(b.includes('light pink'))return {key:'LP|Any',dyed:true};
+    return {unmapped:true,why:'基底待確認'};
+  }
+  let paren=(/\(([^)]+)\)/.exec(raw)||[])[1]||'';let base=raw.replace(/\([^)]*\)/g,'').trim();
+  let dashV='';const dm=/^(.+?)-((?:SRM|KV|CH|CL|L)\d[\w\-]*)$/i.exec(base);if(dm){base=dm[1];dashV=dm[2];}
+  let code=list.some(p=>p.code.toUpperCase()===base.toUpperCase())?list.find(p=>p.code.toUpperCase()===base.toUpperCase()).code:(COLOR_NAMES[base.toLowerCase()]||null);
+  if(!code&&/^[A-Z0-9\-]{1,8}$/.test(base))code=base;
+  if(!code)return {unmapped:true};
+  if(code==='W')return {key:party?'W (Party B)|SRM0533':'W (A+)|SRM0533'};
+  let v=normVariety(variety||dashV||paren);if(/fuller|yellow with strip|tangerine|orange/i.test(v))v='';
+  const cands=S.products.filter(p=>p.code===code);
+  if(v){const hit=cands.find(p=>p.variety.toUpperCase()===v.toUpperCase());if(hit)return {key:hit.key};return {key:code+'|'+v,newItem:true};}
+  if(cands.length===1)return {key:cands[0].key};
+  if(code==='FS')return {key:"FS|Fuller's Sunset"};
+  return {key:code+'|Any'};
+}
+async function readOrderExcel(file,list){
+  const msg=$('#rqUpMsg');msg.textContent=UI.lang==='en'?'Reading…':'讀取中…';
+  try{
+    const X=await loadXLSX();const wb=X.read(await file.arrayBuffer(),{type:'array'});
+    let filled=0,free=0,skipped=0,cust='',etd='';
+    for(const n of wb.SheetNames){
+      const rows=X.utils.sheet_to_json(wb.Sheets[n],{header:1,raw:true,defval:null});
+      let hi=rows.findIndex(r=>r&&r.some(c=>/^(color|顏色)$/i.test(String(c??'').trim())));if(hi<0)continue;
+      const H=rows[hi].map(c=>String(c??'').trim());const find=re=>H.findIndex(h=>re.test(h));
+      const ci=find(/^(color|顏色)$/i),vi=find(/variety|品種/i),bi=find(/箱數|original order|rb can sup|boxes/i),si=find(/總枝數|total ste/i),gi=find(/等級|^lev/i),cu=find(/客戶|customer/i),ei=find(/etd|出貨日期/i),ni=find(/入數|^ste/i);
+      for(let r=hi+1;r<rows.length;r++){const row=rows[r]||[];
+        if(cu>=0&&row[cu]&&!cust)cust=String(row[cu]).split(/\n|\(/)[0].trim();
+        if(ei>=0&&row[ei]&&!etd)etd=row[ei];
+        const color=row[ci];if(!color||/total|合計/i.test(String(color)))continue;
+        const m=mapOrderLine(color,vi>=0?row[vi]:'',gi>=0?row[gi]:'',list);
+        let qty=si>=0?Number(row[si])||0:0;const bx=bi>=0?Number(row[bi])||0:0;
+        if(!qty&&bx&&ni>=0)qty=bx*(Number(row[ni])||0);
+        if(m&&m.box)qty=bx;
+        if(!qty){skipped++;continue;}
+        if(!m||m.unmapped||m.newItem){RQ.free.push({code:m&&m.newItem?m.key.split('|')[0]:String(color).trim(),variety:m&&m.newItem?m.key.split('|')[1]:(vi>=0&&row[vi]?String(row[vi]):'?'),qty:Math.floor(qty),remark:(m&&m.why?m.why+'；':'')+'原文 '+String(color).trim()});free++;continue;}
+        RQ.qty[m.key]=(RQ.qty[m.key]||0)+Math.floor(qty);filled++;
+        if(m.dyed)RQ.remark=(RQ.remark?RQ.remark+' + ':'')+String(color).trim()+' '+Math.floor(qty);
+      }
+    }
+    if(cust){const known=Object.keys(S.custMem).find(k=>cust.toLowerCase().startsWith(k.toLowerCase()));if(known)cust=known;RQ.customer=cust;const mm=S.custMem[cust];if(mm)RQ.region=mm.region;}
+    if(etd){let d=null;if(typeof etd==='number'){d=new Date(Date.UTC(1899,11,30)+etd*864e5);}else{const s=String(etd).replace(/\./g,'-').replace(/\//g,'-');const m=/(\d{4})-(\d{1,2})-(\d{1,2})/.exec(s);if(m)d=new Date(Date.UTC(+m[1],+m[2]-1,+m[3]));}if(d)RQ.shipDate=d.toISOString().slice(0,10);}
+    renderReq();
+    $('#rqUpMsg').textContent=UI.lang==='en'?`Filled ${filled} lines · ${free} need mapping (added below) · ${skipped} zero lines skipped. Please check before submitting.`:`已填入 ${filled} 列・${free} 列待對應（已列在表末）・略過 ${skipped} 列 0 數量。送出前請核對。`;
+  }catch(err){msg.textContent=(UI.lang==='en'?'Could not read: ':'無法讀取：')+err.message;}
+}
+/* ================= views ================= */
+function renderTabs(){
+  const isA=ROLE==='admin';
+  const tabs=isA?[['grid',t('grid')],['pending',t('pending')+'<span class="badge" hidden></span>'],['std',t('std')],['req',t('req')+(UI.lang==='en'?' (on behalf)':'（代填）')],['links',UI.lang==='en'?'Links & data':'連結／資料']]:ROLE==='req'?[['req',t('req')]]:[];
+  if(ROLE==='req')UI.view='req';
+  if(ROLE==='setup')UI.view='setup';
+  $('#tabs').innerHTML=tabs.map(([v,l])=>`<button type="button" data-v="${v}" aria-pressed="${UI.view===v}">${l}</button>`).join('');
+  $('#tabs').hidden=!tabs.length;
+  $('#tabs').querySelectorAll('button').forEach(b=>b.onclick=()=>{UI.view=b.dataset.v;saveUI();renderView();});
+  $('#persona').hidden=true;
+  const who=ROLE==='req'?reqWho():null;$('#whoChip').textContent=who?who.name:'';$('#whoChip').hidden=!who;
+  $('.weekbar').hidden=ROLE==='setup';
+}
+function renderView(remote){
+  renderTabs();
+  const lock=ROLE==='admin'&&!UI.pin;
+  $('#pin').hidden=!lock;if(lock&&!remote)$('#pinIn').focus();
+  for(const [id,v] of [['#vGrid','grid'],['#vPending','pending'],['#vReq','req'],['#vStd','std'],['#vLinks','links'],['#vSetup','setup']])$(id).hidden=lock||UI.view!==v;
+  if(lock)return;
+  if(UI.view==='setup')renderSetup();
+  else if(ROLE==='req'&&(!READY||!reqWho())){$('#reqIn').innerHTML=`<div class="panel"><p class="note">${!READY?(UI.lang==='en'?'Loading…':'載入中…'):(UI.lang==='en'?'This link is not active. Please ask Sabina for your link again.':'這個連結尚未啟用或已失效，請向 Sabina 索取你的連結。')}</p></div>`;}
+  else if(UI.view==='grid')renderGrid();
+  else if(UI.view==='pending')renderPending();
+  else if(UI.view==='std')renderStd();
+  else if(UI.view==='links'){if(!remote||!$('#linksIn').dataset.ok)renderLinks();}
+  else{renderReq();if(ROLE==='admin'){const sel=`<div class="panel" id="reqWhoBar"><label class="tg">${UI.lang==='en'?'Fill in for':'代填對象'} <select class="sel" id="reqWhoSel">${PEOPLE.map(p=>`<option value="${p.id}"${p.id===UI.reqWho?' selected':''}>${p.name}</option>`).join('')}</select></label><span class="note">${UI.lang==='en'?'Only the allocator sees this selector.':'只有配貨人看得到代填選單。'}</span></div>`;$('#reqIn').insertAdjacentHTML('afterbegin',sel);$('#reqWhoSel').onchange=e=>{UI.reqWho=e.target.value;RQ=null;saveUI();renderView();};}}
+  updateBadge();
+  document.querySelectorAll('[data-t]').forEach(el=>el.textContent=t(el.dataset.t));
+  $('#langBtn').textContent=UI.lang==='en'?'中文':'EN';
+  $('#q').placeholder=UI.lang==='en'?'Filter color/variety':'篩選花色/品種';
+}
+async function copyText(txt,btn){try{await navigator.clipboard.writeText(txt);toast(UI.lang==='en'?'Copied':'已複製');}catch(e){const inp=btn.parentElement.querySelector('input');if(inp){inp.select();}toast(UI.lang==='en'?'Select the link and copy it':'請選取連結後複製');}}
+function renderLinks(){
+  const empty=!Object.values(S.weeks).some(w=>w._exists)&&!Object.keys(S.tickets).length;
+  const row=(name,url,note)=>`<tr><td><b>${esc(name)}</b>${note?`<div class="note">${note}</div>`:''}</td><td style="width:100%"><input class="lnk" readonly value="${esc(url)}" aria-label="${esc(name)}"></td><td><button class="btn sm" type="button" data-copy="${esc(url)}">${UI.lang==='en'?'Copy':'複製'}</button></td></tr>`;
+  $('#linksIn').innerHTML=`<div class="panel"><h2>${UI.lang==='en'?'Links':'連結'}</h2>
+   <p class="note">${UI.lang==='en'?'No sign-in needed. Each link is private: whoever has it can use that page, so send each colleague only their own link. Keep the allocator link to yourself.':'不需要登入。每個連結都是專屬鑰匙，拿到連結的人就能使用那一頁，請只把各自的連結傳給本人；配貨人連結請自己保管。'}</p>
+   <div class="tblx"><table class="list links">${row(UI.lang==='en'?'Allocator (you)':'配貨人（你）',linkFor('a',KEY),UI.lang==='en'?'Also asks for the PIN on a new device':'新裝置首次開啟仍需 PIN')}${PEOPLE.map(p=>S.people[p.id]?.token?row(p.name,linkFor('r',S.people[p.id].token),p.regions.map(rgName).join('、')):'').join('')}</table></div></div>
+  <div class="panel"><h2>${UI.lang==='en'?'Data':'資料'}</h2>
+   <div class="filters"><button class="btn" type="button" id="dlBackup">${UI.lang==='en'?'Download full backup (JSON)':'下載完整備份（JSON）'}</button>
+   <label class="btn${empty?'':' dis'}" ${empty?'':'aria-disabled="true"'}>${UI.lang==='en'?'Import data from the old version':'匯入舊版資料'}<input type="file" id="impOld" accept=".json,application/json" hidden ${empty?'':'disabled'}></label>
+   <span class="note" id="impMsg">${empty?(UI.lang==='en'?'Import works only while this workspace has no weeks or requests, so nothing can be overwritten.':'只有在這個工作區還沒有任何週次與需求時才能匯入，避免覆蓋資料。'):(UI.lang==='en'?'Import is locked because this workspace already has data.':'這個工作區已經有資料，匯入已鎖定以免覆蓋。')}</span></div></div>`;
+  if(READY)$('#linksIn').dataset.ok='1';
+  $('#linksIn').querySelectorAll('[data-copy]').forEach(b=>b.onclick=()=>copyText(b.dataset.copy,b));
+  $('#dlBackup').onclick=()=>{const data={format:'sunpride-alloc-v1',exportedAt:nowISO(),cfg:{products:{list:S.products},standing:{items:S.standing},customers:{map:S.custMem}},weeks:Object.fromEntries(Object.entries(S.weeks).filter(([,w])=>w._exists).map(([k,w])=>[k,weekDocFull(k)])),tickets:Object.fromEntries(Object.entries(S.tickets).map(([k,v])=>[k,v])),notices:S.notices};
+    const blob=new Blob([JSON.stringify(data,null,1)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`配貨平台備份_${nowISO().slice(0,16).replace(/[:T]/g,'')}.json`;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},500);};
+  const io=$('#impOld');if(io&&empty)io.onchange=async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;const msg=$('#impMsg');
+    try{const data=JSON.parse(await f.text());const n=await importOld(data,(i,tot)=>{msg.textContent=(UI.lang==='en'?'Importing ':'匯入中 ')+i+' / '+tot;});msg.textContent=(UI.lang==='en'?'Imported ':'已匯入 ')+n+(UI.lang==='en'?' documents.':' 筆資料。');toast(UI.lang==='en'?'Import complete':'匯入完成');setTimeout(()=>{delete $('#linksIn').dataset.ok;renderLinks();},1500);}
+    catch(err){msg.textContent=(UI.lang==='en'?'Import stopped: ':'匯入中止：')+err.message+(UI.lang==='en'?' Nothing after this point was written.':'（之後的資料沒有寫入）');}};
+}
+function renderSetup(){
+  $('#setupIn').innerHTML=`<div class="panel"><h2>${UI.lang==='en'?'Set up the allocation platform':'建立配貨平台'}</h2>
+   <p class="note">${UI.lang==='en'?'If you already have your allocator link, open that link instead. Use this only once, to create a new workspace in your Firebase project.':'如果你已經有配貨人連結，請直接開那個連結。這裡只在第一次建立工作區時使用一次。'}</p>
+   <div class="form" style="grid-template-columns:1fr"><label>${UI.lang==='en'?'Paste the firebaseConfig from the Firebase console':'貼上 Firebase 主控台中的 firebaseConfig'}<textarea id="cfgIn" rows="8" style="font-family:var(--f-num);font-size:13px;border:1px solid var(--line2);border-radius:6px;padding:6px;background:var(--surface);color:var(--ink)" placeholder="const firebaseConfig = {&#10;  apiKey: &quot;…&quot;,&#10;  projectId: &quot;…&quot;,&#10;  …&#10;};"></textarea></label></div>
+   <div class="filters" style="margin-top:8px"><button class="btn pri" type="button" id="mkWs">${UI.lang==='en'?'Create workspace':'建立工作區'}</button><span class="note" id="mkMsg"></span></div></div>`;
+  $('#mkWs').onclick=async()=>{const cfg=parseCfg($('#cfgIn').value);const msg=$('#mkMsg');
+    if(!cfg.k||!cfg.p){msg.textContent=UI.lang==='en'?'apiKey or projectId not found. Paste the whole config block.':'找不到 apiKey 或 projectId，請貼上完整的設定區塊。';return;}
+    msg.textContent=UI.lang==='en'?'Creating…':'建立中…';$('#mkWs').disabled=true;
+    try{const key=await createWorkspace(cfg);UI.pin=true;saveUI();window.__noHashReload=true;location.hash=`a=${key}&p=${encodeURIComponent(cfg.p)}&k=${encodeURIComponent(cfg.k)}`;location.reload();}
+    catch(e){$('#mkWs').disabled=false;msg.textContent=(UI.lang==='en'?'Could not create: ':'無法建立：')+(e.code||e.message)+(e.code==='permission-denied'?(UI.lang==='en'?' — publish the Firestore rules first.':'，請先發布 Firestore 規則。'):'');}};
+}
+function applyHash(){
+  const h=new URLSearchParams(location.hash.replace(/^#/,''));
+  const a=h.get('a'),r=h.get('r'),p=h.get('p'),k=h.get('k');
+  if(p&&k)FBCFG={p,k};
+  if(a&&FBCFG){ROLE='admin';KEY=a;if(!['grid','pending','std','req','links'].includes(UI.view))UI.view='grid';}
+  else if(r&&FBCFG){ROLE='req';TOKEN=r;UI.view='req';}
+  else ROLE='setup';
+}
+let toastT=null;
+function toast(msg,undo){const el=$('#toast');el.innerHTML=esc(msg)+(undo?` <button type="button">${UI.lang==='en'?'Undo':'復原'}</button>`:'');el.hidden=false;if(undo)el.querySelector('button').onclick=()=>{undo();el.hidden=true;};clearTimeout(toastT);toastT=setTimeout(()=>el.hidden=true,undo?6000:2800);}
+/* ================= boot ================= */
+function boot(){
+  loadUI();applyHash();
+  initToolbar();initZoom();initGridEvents();
+  sliders=[new Slider($('#vs'),$('#scroller'),'v'),new Slider($('#hs'),$('#scroller'),'h')];
+  $('#weeks').onclick=e=>{const b=e.target.closest('[data-w]');if(b)gotoWeek(b.dataset.w);};
+  $('#wkjump').onchange=e=>{const id=normWeek(e.target.value);e.target.value='';if(!id){toast('格式：2026-W50 或 W50');return;}gotoWeek(id);};
+  $('#langBtn').onclick=()=>{UI.lang=UI.lang==='en'?'zh':'en';UI.langSet=true;saveUI();initToolbar();renderWeeks();renderView();};
+  $('#pinForm').onsubmit=e=>{e.preventDefault();if($('#pinIn').value==='777'){UI.pin=true;saveUI();$('#pin').hidden=true;$('#pinErr').textContent='';renderView();}else{$('#pinErr').textContent=UI.lang==='en'?'Wrong PIN':'PIN 不正確';$('#pinIn').select();}};
+  addEventListener('hashchange',()=>{if(!window.__noHashReload)location.reload();});
+  let rzT=null,wasNarrow=innerWidth<600;addEventListener('resize',()=>{sliders.forEach(s=>s.sync());clearTimeout(rzT);rzT=setTimeout(()=>{const n=innerWidth<600;if(n!==wasNarrow){wasNarrow=n;if(UI.view==='grid')renderGrid();}},150);});
+  setStatus(ROLE==='setup'?'':(UI.lang==='en'?'Connecting…':'連線中…'));
+  renderWeeks();renderView();
+  connect();
+}
+boot();
+
+</script>
+</body>
+</html>
