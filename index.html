@@ -279,7 +279,7 @@ table.req{border-collapse:collapse;width:100%;font-size:13px}
     <div class="tg opt"><span data-t="owner"></span><select class="sel" id="fOwner"></select></div>
     <div class="tg opt"><label><input type="checkbox" id="fzTop"><span data-t="fzTop"></span></label><label><input type="checkbox" id="fzLeft"><span data-t="fzLeft"></span></label></div>
     <div class="tg"><span id="hiddenChip"></span></div><div class="tg opt legend" id="legend"></div>
-    <div class="tg" style="margin-left:auto"><button class="btn" id="upBtn" type="button" data-t="upload"></button><input type="file" id="upFile" accept=".xlsx,.xls" hidden></div>
+    <div class="tg" style="margin-left:auto"><button class="btn" id="expBtn" type="button" data-t="export" title="匯出目前週次、畫面上顯示的欄與列（Excel）"></button><button class="btn" id="upBtn" type="button" data-t="upload"></button><input type="file" id="upFile" accept=".xlsx,.xls" hidden></div>
   </div>
   <div class="imp pad" id="imp" hidden></div>
   <div class="work">
@@ -408,13 +408,13 @@ const F6_QUICK=['AU','US','JP','VN'];
 const LS_KEY='sp-alloc-local-v2', UI_KEY='sp-alloc-ui-v2';
 /* ================= i18n ================= */
 const T={
- zh:{grid:'配貨表',pending:'待回覆',req:'需求登記',std:'固定單／預留',hideZero:'隱藏 0/空白欄',hideNeg:'隱藏負數欄',hideEmpty:'隱藏空白列',owner:'業務',all:'全部',fzTop:'固定表頭',fzLeft:'固定左欄',upload:'上傳 Apollo 預估',
+ zh:{grid:'配貨表',pending:'待回覆',req:'需求登記',std:'固定單／預留',hideZero:'隱藏 0/空白欄',hideNeg:'隱藏負數欄',hideEmpty:'隱藏空白列',owner:'業務',all:'全部',fzTop:'固定表頭',fzLeft:'固定左欄',upload:'上傳 Apollo 預估',export:'匯出配貨表',
   region:'地區',customer:'客戶',demand:'需求',code:'花色代碼',variety:'品種',supply:'總供應量',prod:'當週產出',stock:'庫存',remain:'剩餘',sub:'小計',f6sup:'6F 供應',f6rem:'6F 剩餘',add6:'＋ 增加 6F 列',next:'下週預估',nextAvail:'下週可用（扣本週超配）',addRow:'＋ 客戶列',
   saved:'已同步',pinTitle:'配貨人登入',pinNote:'首次使用請輸入 PIN（原型為 777；正式版由伺服器驗證、記住裝置 30 天）',enter:'進入',
   allocated:'已配',suggest:'建議',lastWk:'上週',share:'比例',noDemand:'目前品種沒有同事需求，仍可直接配貨。',pickCell:'點選任一品種欄或配貨格，這裡會顯示該品種的需求、建議與風險。',
   shipDate:'出貨日',shipWk:'出貨週',supWk:'供應週',remark:'備註',submit:'送出需求',update:'更新需求',total:'合計',stems:'枝',boxes:'箱',myTickets:'我的需求',newTicket:'＋ 新需求',
   qty:'數量',reply:'配貨回覆',grade:'規格',addFree:'＋ 新增表外品項',search:'搜尋花色或品種',status:'狀態',legAuto:'固定單／預留自動帶入',legOvr:'本週已修改'},
- en:{grid:'Allocation',pending:'Pending',req:'Requests',std:'Standing & reserves',hideZero:'Hide 0/blank cols',hideNeg:'Hide negative cols',hideEmpty:'Hide empty rows',owner:'Sales',all:'All',fzTop:'Freeze header',fzLeft:'Freeze labels',upload:'Upload Apollo forecast',
+ en:{grid:'Allocation',pending:'Pending',req:'Requests',std:'Standing & reserves',hideZero:'Hide 0/blank cols',hideNeg:'Hide negative cols',hideEmpty:'Hide empty rows',owner:'Sales',all:'All',fzTop:'Freeze header',fzLeft:'Freeze labels',upload:'Upload Apollo forecast',export:'Export allocation sheet',
   region:'Region',customer:'Customer',demand:'Demand',code:'Color code',variety:'Variety',supply:'Total supply',prod:'Production',stock:'Stock',remain:'Remaining',sub:'Subtotal',f6sup:'6F supply',f6rem:'6F remaining',add6:'+ Add 6F row',next:'Next week forecast',nextAvail:'Next week net of over-allocation',addRow:'+ Customer row',
   saved:'Synced',pinTitle:'Allocator sign-in',pinNote:'Enter the PIN on first use (prototype: 777; production verifies on the server and remembers the device for 30 days)',enter:'Enter',
   allocated:'Allocated',suggest:'Suggested',lastWk:'Last wk',share:'Share',noDemand:'No colleague demand for this product yet. You can still allocate directly.',pickCell:'Select any product column or allocation cell to see its demand, suggestion and risk here.',
@@ -991,6 +991,7 @@ function initToolbar(){
   $('#info').onclick=e=>{if(e.target.closest('[data-act="toggleInfo"]')){UI.info=!UI.info;saveUI();renderInfo();sliders.forEach(s=>s.sync());}
     const rb=e.target.closest('[data-act="restoreCell"]');if(rb){const wkId=curWeek(),wk=W();(wk.alloc[rb.dataset.row]=wk.alloc[rb.dataset.row]||{})[rb.dataset.k]='auto';bump();saveWeek(wkId,{alloc:{[rb.dataset.row]:{[rb.dataset.k]:'auto'}}});renderGrid();toast(UI.lang==='en'?'Restored to default':'已恢復預設');}};
   $('#upBtn').onclick=()=>$('#upFile').click();
+  $('#expBtn').onclick=exportWeek;
   $('#upFile').onchange=e=>{const f=e.target.files[0];e.target.value='';if(f)startImport(f);};
   $('#legend').innerHTML=`<span class="lg auto">12</span>${t('legAuto')}<span class="lg ovr">12</span>${t('legOvr')}`;
 }
@@ -1043,6 +1044,51 @@ function applyImport(){
   if(wk._exists)saveWeek(target,{sup:supPatch,up:wk.up,fc});else saveWeek(target);
   $('#imp').hidden=true;IMP=null;UI.week=target;saveUI();bump();renderWeeks();renderGrid();
   toast((UI.lang==='en'?'Supply updated for ':'已更新供應：')+wShort(target));
+}
+/* ================= export the selected week's allocation sheet ================= */
+async function exportWeek(){
+  const btn=$('#expBtn');btn.disabled=true;
+  try{
+    const X=await loadXLSX();const wkId=curWeek(),wk=W(wkId),en=UI.lang==='en';
+    const vp=visibleProducts(),rows=visibleRows();
+    const pv=wk.up?null:provSrc(wkId);
+    const num=v=>v==null||v===''?null:Number(v);
+    const sum=(k,f)=>{const p=getProd(k);if(p&&p.virtual)return sumN(p.members.map(m=>wk.sup?.[m.key]?.[f]??null));return wk.sup?.[k]?.[f]??null;};
+    const lab=(a,b='')=>[a,b];
+    const A=[];
+    A.push([...lab(en?'Region':'地區',en?'Customer':'客戶'),...vp.map(p=>p.code)]);
+    A.push([...lab('',en?'Variety':'品種'),...vp.map(p=>p.variety)]);
+    A.push([...lab(en?'Grade / unit':'規格／單位'),...vp.map(p=>`${p.grade||''} ${p.unit==='箱'?(en?'box':'箱'):(en?'stem':'枝')}`.trim())]);
+    A.push([...lab((en?'Total supply ':'總供應量 ')+wShort(wkId)+(pv?(en?' (provisional, no stock)':'（暫估，不含庫存）'):(wk.up?'':(en?' (not uploaded)':'（尚未上傳）')))),...vp.map(p=>num(supplyOf(p.key,wk)))]);
+    if(!pv){A.push([...lab(en?'Production':'當週產出'),...vp.map(p=>num(sum(p.key,'prod')))]);A.push([...lab(en?'Stock':'庫存'),...vp.map(p=>num(sum(p.key,'stock')))]);}
+    A.push([...lab(en?'Remaining':'剩餘'),...vp.map(p=>num(remainOf(p.key,wkId)))]);
+    A.push([]);
+    for(const R of REGIONS){
+      const rr=rows.filter(r=>r.region===R.id);if(!rr.length)continue;
+      A.push([...lab(rgName(R.id)+(en?' subtotal':' 小計'),R.owner),...vp.map(p=>{let s=null;for(const r of rr){const v=effA(wkId,r.id,p.key);if(v!=null)s=(s||0)+v;}return s;})]);
+      for(const r of rr)A.push([rgName(r.region),r.customer||(en?'(regional total)':'（地區總量）'),...vp.map(p=>num(effA(wkId,r.id,p.key)))]);
+    }
+    A.push([]);
+    A.push([...lab(en?'6F supply':'6F 供應'),...vp.map(p=>num(f6Sup(p.key,wk)))]);
+    for(const r of wk.rows6)A.push([rgName(r.region),r.customer||'',...vp.map(p=>p.virtual?sumN(p.members.map(m=>wk.alloc6?.[r.id]?.[m.key]??null)):num(wk.alloc6?.[r.id]?.[p.key]))]);
+    A.push([...lab(en?'6F remaining':'6F 剩餘'),...vp.map(p=>num(f6Rem(p.key,wk)))]);
+    A.push([]);
+    A.push([...lab((en?'Next week forecast ':'下週預估 ')+wShort(weekAdd(wkId,1))),...vp.map(p=>num(nextOf(p.key,wk)))]);
+    A.push([...lab(en?'Next week net of over-allocation':'下週可用（扣本週超配）'),...vp.map(p=>num(nextAvail(p.key)))]);
+    const ws=X.utils.aoa_to_sheet(A);
+    ws['!cols']=[{wch:16},{wch:20},...vp.map(()=>({wch:10}))];
+    // demand lines with replies
+    const D=[[en?'Week':'週次',en?'Sales':'業務',en?'Region':'地區',en?'Customer':'客戶',en?'Color code':'花色代碼',en?'Variety':'品種',en?'Demand':'需求',en?'Allocated':'已配',en?'Unfilled':'未滿足',en?'Status':'狀態',en?'Remark':'備註']];
+    for(const d of weekDemands(wkId).slice().sort((x,y)=>(x.code+x.variety).localeCompare(y.code+y.variety)||x.region.localeCompare(y.region))){
+      const a=lineAlloc(d),st=lineStatus(d);D.push([wShort(wkId),d.owner,rgName(d.region),d.customer||'',d.code,d.variety,d.qty??null,a,Math.max(0,(d.qty||0)-(a||0)),en?ST[st][2]:ST[st][1],d.remark||'']);}
+    const ws2=X.utils.aoa_to_sheet(D);ws2['!cols']=[{wch:8},{wch:12},{wch:14},{wch:20},{wch:10},{wch:16},{wch:8},{wch:8},{wch:8},{wch:10},{wch:40}];
+    const wb=X.utils.book_new();X.utils.book_append_sheet(wb,ws,(en?'Allocation ':'配貨表 ')+wShort(wkId));X.utils.book_append_sheet(wb,ws2,en?'Demand & replies':'需求與回覆');
+    const d=new Date(),stamp=`${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}_${String(d.getHours()).padStart(2,'0')}${String(d.getMinutes()).padStart(2,'0')}`;
+    const out=X.write(wb,{bookType:'xlsx',type:'array'});const blob=new Blob([out],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+    const link=document.createElement('a');link.href=URL.createObjectURL(blob);link.download=`SUNPRIDE_allocation_${wkId}_${stamp}.xlsx`;document.body.appendChild(link);link.click();setTimeout(()=>{URL.revokeObjectURL(link.href);link.remove();},1000);
+    toast((en?'Exported ':'已匯出 ')+wShort(wkId));
+  }catch(e){toast((UI.lang==='en'?'Export failed: ':'匯出失敗：')+e.message);}
+  finally{btn.disabled=false;}
 }
 /* ================= weeks ================= */
 function renderWeeks(){
@@ -1354,7 +1400,7 @@ function renderLinks(){
   if(READY)$('#linksIn').dataset.ok='1';
   $('#linksIn').querySelectorAll('[data-copy]').forEach(b=>b.onclick=()=>copyText(b.dataset.copy,b));
   $('#dlBackup').onclick=()=>{const data={format:'sunpride-alloc-v1',exportedAt:nowISO(),cfg:{products:{list:S.products},standing:{items:S.standing},customers:{map:S.custMem}},weeks:Object.fromEntries(Object.entries(S.weeks).filter(([,w])=>w._exists).map(([k,w])=>[k,weekDocFull(k)])),tickets:Object.fromEntries(Object.entries(S.tickets).map(([k,v])=>[k,v])),notices:S.notices};
-    const blob=new Blob([JSON.stringify(data,null,1)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`配貨平台備份_${nowISO().slice(0,16).replace(/[:T]/g,'')}.json`;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},500);};
+    const blob=new Blob([JSON.stringify(data,null,1)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`SUNPRIDE_backup_${nowISO().slice(0,16).replace(/[-:T]/g,'')}.json`;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},500);};
   const io=$('#impOld');if(io&&empty)io.onchange=async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;const msg=$('#impMsg');
     try{const data=JSON.parse(await f.text());const n=await importOld(data,(i,tot)=>{msg.textContent=(UI.lang==='en'?'Importing ':'匯入中 ')+i+' / '+tot;});msg.textContent=(UI.lang==='en'?'Imported ':'已匯入 ')+n+(UI.lang==='en'?' documents.':' 筆資料。');toast(UI.lang==='en'?'Import complete':'匯入完成');setTimeout(()=>{delete $('#linksIn').dataset.ok;renderLinks();},1500);}
     catch(err){msg.textContent=(UI.lang==='en'?'Import stopped: ':'匯入中止：')+err.message+(UI.lang==='en'?' Nothing after this point was written.':'（之後的資料沒有寫入）');}};
