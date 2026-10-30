@@ -131,6 +131,7 @@ table.g{border-collapse:separate;border-spacing:0;table-layout:fixed;font-size:c
 .g.fz-top thead th,.g.fz-top thead td{position:sticky;z-index:3}
 .g .sl{position:sticky;z-index:2}
 .g thead .sl,.g.fz-top thead .sl{z-index:6}
+.g td.prov input{font-style:italic;color:var(--muted)}
 .g td.anyc{background:var(--bg);font-style:italic;cursor:default}
 .g td.anyc.under{color:var(--warn);font-weight:600}
 .g th.anyh{background:var(--accent-soft)}
@@ -357,14 +358,15 @@ function parseApollo(rows, anchor){
       if (/採收|朵數|備註/.test(String(rc))) continue;
       const {code, variety} = normalizeProduct(rc, vrow[c]);
       const key = code+'|'+variety;
-      const o = acc[key] || (acc[key] = {key, code, variety, prod:null, stock:null, f6:null, next:null, src:[]});
+      const o = acc[key] || (acc[key] = {key, code, variety, prod:null, stock:null, f6:null, next:null, wk:{}, src:[]});
       const put = (f,row)=>{ if(!row) return; const v=cellNum(row[c]); o[f]=(o[f]||0)+v; };
       put('stock', info['庫存']); put('f6', info['6F']); put('prod', info[anc]); put('next', info[nxt]);
+      for (const L of Object.keys(info)) if (/^W\d+$/.test(L)) o.wk[L] = (o.wk[L]||0) + cellNum(info[L][c]);
       o.src.push(String(rc)+(vrow[c]!=null?'/'+String(vrow[c]).replace(/\s+/g,' '):''));
     }
   }
   const fl = x => x==null?null:Math.floor(x+1e-9); // 先加總後無條件捨去
-  const list = Object.values(acc).map(o=>({...o, prod:fl(o.prod), stock:fl(o.stock), f6:fl(o.f6), next:fl(o.next),
+  const list = Object.values(acc).map(o=>({...o, prod:fl(o.prod), stock:fl(o.stock), f6:fl(o.f6), next:fl(o.next), wk:Object.fromEntries(Object.entries(o.wk).map(([k,v])=>[k,fl(v)])),
     supplyRaw:(o.prod||0)+(o.stock||0)}));
   list.forEach(o=>{ o.supply = (o.prod==null&&o.stock==null)?null:fl((o.supplyRaw)); delete o.supplyRaw; });
   return { products:list, weeks:weeksFound };
@@ -583,7 +585,7 @@ async function connect(){
       for(const ch of qs.docChanges()){const id=ch.doc.id;
         if(ch.type==='removed'){delete S.weeks[id];continue;}
         let w=clone(ch.doc.data());for(const p of pendingFor(P.week(id)))w=p.mode==='set'?clone(p.data):deepMerge(w,p.data);
-        S.weeks[id]=Object.assign({up:null,sup:{},rows:[],alloc:{},rows6:[],alloc6:{}},w,{_exists:true});}
+        S.weeks[id]=Object.assign({up:null,sup:{},rows:[],alloc:{},rows6:[],alloc6:{}},w,{_exists:true,_id:id});}
       ready('w');scheduleRender();schedulePublish();},err);
     const wsNotices=[];const personNotices={};
     const mergeNotices=()=>{S.notices=[...wsNotices,...Object.values(personNotices).flat()].sort((a,b)=>String(a.ts).localeCompare(String(b.ts)));};
@@ -638,7 +640,7 @@ function W(id=curWeek()){
   if(!S.weeks[id]){
     const prev=Object.keys(S.weeks).filter(k=>k<id).sort().pop()||Object.keys(S.weeks).sort()[0];
     const src=S.weeks[prev];
-    S.weeks[id]={up:null,sup:{},rows:src?clone(src.rows):[],alloc:{},rows6:[],alloc6:{},_exists:false};
+    S.weeks[id]={up:null,sup:{},rows:src?clone(src.rows):[],alloc:{},rows6:[],alloc6:{},_exists:false,_id:id};
   }
   return S.weeks[id];
 }
@@ -674,13 +676,26 @@ function ensureStandingRows(wkId){
   if(added){bump();if(ROLE==='admin'&&UI.pin&&READY)saveWeek(wkId,{rows:wk.rows});}
 }
 /* ================= calculations ================= */
-function supplyOf(k,wk=W()){if(isAny(k))return sumN(anyMembers(k.slice(0,-4)).map(p=>supplyOf(p.key,wk)));const s=wk.sup?.[k];if(!s||(s.prod==null&&s.stock==null))return null;return Math.floor((s.prod||0)+(s.stock||0));}
+/* 尚未收到當週預估時，帶入最近一次上傳中對這一週的預估產出（不含庫存） */
+let PROV={ver:-1,map:{}};
+function provSrc(wkId){
+  if(!wkId||S.weeks[wkId]?.up)return null;
+  if(PROV.ver!==VER)PROV={ver:VER,map:{}};
+  if(wkId in PROV.map)return PROV.map[wkId];
+  let res=null;const ups=Object.keys(S.weeks).filter(k=>S.weeks[k].up&&k<wkId).sort();
+  for(let i=ups.length-1;i>=0&&!res;i--){const u=S.weeks[ups[i]];
+    if(u.fc&&u.fc[wkId])res={from:ups[i],at:u.up.at,vals:u.fc[wkId]};
+    else if(weekAdd(ups[i],1)===wkId){const vals={};for(const [k,s] of Object.entries(u.sup||{}))if(s&&s.next!=null)vals[k]=s.next;if(Object.keys(vals).length)res={from:ups[i],at:u.up.at,vals};}}
+  PROV.map[wkId]=res;return res;
+}
+function isProv(k,wk){if(wk.up)return false;const s=wk.sup?.[k];if(s&&(s.prod!=null||s.stock!=null))return false;const p=provSrc(wk._id);return !!(p&&p.vals[k]!=null);}
+function supplyOf(k,wk=W()){if(isAny(k))return sumN(anyMembers(k.slice(0,-4)).map(p=>supplyOf(p.key,wk)));const s=wk.sup?.[k];if(!s||(s.prod==null&&s.stock==null)){if(!wk.up){const p=provSrc(wk._id);if(p&&p.vals[k]!=null)return Math.floor(p.vals[k]+1e-9);}return null;}return Math.floor((s.prod||0)+(s.stock||0));}
 function allocSum(k,wkId=curWeek()){const wk=S.weeks[wkId];if(!wk)return 0;let s=0;for(const r of wk.rows){const v=effA(wkId,r.id,k);if(v!=null)s+=v;}return s;}
 function anyUnsplit(k,wkId=curWeek()){const t=autoInfo(wkId).anyT;let u=0;for(const rid in t){const tg=t[rid][k];if(tg)u+=Math.max(0,tg-(effA(wkId,rid,k)||0));}return u;}
 function remainOf(k,wkId=curWeek()){const wk=W(wkId);const sup=supplyOf(k,wk);const a=allocSum(k,wkId)+(isAny(k)?anyUnsplit(k,wkId):0);if(sup==null)return a?-a:null;return sup-a;}
 function f6Sup(k,wk=W()){if(isAny(k))return sumN(anyMembers(k.slice(0,-4)).map(p=>f6Sup(p.key,wk)));return wk.sup?.[k]?.f6??null;}
 function f6Rem(k,wk=W()){if(isAny(k))return sumN(anyMembers(k.slice(0,-4)).map(p=>f6Rem(p.key,wk)));const s=f6Sup(k,wk);let a=0;for(const r of wk.rows6){const v=wk.alloc6?.[r.id]?.[k];if(v!=null)a+=v;}if(s==null&&!a)return null;return (s||0)-a;}
-function nextOf(k,wk=W()){if(isAny(k))return sumN(anyMembers(k.slice(0,-4)).map(p=>nextOf(p.key,wk)));return wk.sup?.[k]?.next??null;}
+function nextOf(k,wk=W()){if(isAny(k))return sumN(anyMembers(k.slice(0,-4)).map(p=>nextOf(p.key,wk)));const n=wk.sup?.[k]?.next;if(n!=null)return n;if(wk._id){const p=provSrc(weekAdd(wk._id,1));if(p&&p.vals[k]!=null)return Math.floor(p.vals[k]+1e-9);}return null;}
 function nextAvail(k){const n=nextOf(k);const r=remainOf(k);if(n==null&&(r==null||r>=0))return null;return (n||0)+Math.min(r||0,0);}
 function weekDemands(wkId=curWeek()){return S.demands.filter(d=>d.week===wkId&&!d.cancelled);}
 function rowMatch(r,d){return r.region===d.region&&(r.customer||'')===(d.customer||'');}
@@ -728,8 +743,9 @@ function renderGrid(){
   const lab=(txt,cls='')=>`<th class="gut${sl(0)}"></th><th colspan="3" class="lab ${cls}${UI.fzLeft?` sl" style="left:${left[1]}px`:''}">${txt}</th>`;
   h+=`<tr class="hcode">${lab(t('code'))}${vp.map(p=>p.virtual?`<th class="anyh" data-k="${esc(p.key)}" title="${esc(p.members.map(m=>m.variety).join(' / '))}"><b>${esc(p.code)}</b></th>`:`<th data-k="${esc(p.key)}"><input class="code t" data-f="code" data-k="${esc(p.key)}" value="${esc(p.code)}" aria-label="${t('code')}"></th>`).join('')}</tr>`;
   h+=`<tr class="hvar">${lab(t('variety'))}${vp.map(p=>p.virtual?`<th class="anyh" data-k="${esc(p.key)}" title="${esc(p.members.map(m=>m.variety).join(' / '))}"><span class="avar">Any</span></th>`:`<th data-k="${esc(p.key)}" title="${esc(p.variety)} · ${esc(p.grade)} · ${p.unit}"><input class="var t" data-f="variety" data-k="${esc(p.key)}" value="${esc(p.variety)}" aria-label="${t('variety')}"></th>`).join('')}</tr>`;
-  const src=wk.up?`<small>${wShort(wkId)}</small>`:`<small class="tag">${UI.lang==='en'?'not uploaded':'尚未上傳'}</small>`;
-  h+=`<tr class="sup">${lab(t('supply')+src+`<small>${UI.exp?'▴':'▾'} ${UI.lang==='en'?'double-click':'雙擊展開'}</small>`)}${vp.map(p=>{if(p.virtual)return V(p,'','supply');const s=supplyOf(p.key);return `<td data-k="${esc(p.key)}" class="${s==null?'unk':''}"><input class="n" data-f="supply" data-k="${esc(p.key)}" value="${s??''}" placeholder="${s==null?'—':''}" inputmode="numeric" aria-label="${t('supply')}"></td>`}).join('')}</tr>`;
+  const pv=wk.up?null:provSrc(wkId);const pvDate=pv?(new Date(pv.at).getMonth()+1)+'/'+new Date(pv.at).getDate():'';
+  const src=wk.up?`<small>${wShort(wkId)}</small>`:pv?`<small class="tag">${UI.lang==='en'?`provisional · ${wShort(pv.from)} forecast uploaded ${pvDate}, no stock`:`暫估・${pvDate} 上傳的 ${wShort(pv.from)} 預估（不含庫存）`}</small>`:`<small class="tag">${UI.lang==='en'?'not uploaded':'尚未上傳'}</small>`;
+  h+=`<tr class="sup">${lab(t('supply')+src+`<small>${UI.exp?'▴':'▾'} ${UI.lang==='en'?'double-click':'雙擊展開'}</small>`)}${vp.map(p=>{if(p.virtual)return V(p,'','supply');const s=supplyOf(p.key);return `<td data-k="${esc(p.key)}" class="${s==null?'unk':(isProv(p.key,wk)?'prov':'')}" ${isProv(p.key,wk)?`title="${UI.lang==='en'?'Provisional forecast, no stock. Type a number to replace it for this week.':'暫估值（不含庫存）；直接輸入數字可改成本週實際值'}"`:''}><input class="n" data-f="supply" data-k="${esc(p.key)}" value="${s??''}" placeholder="${s==null?'—':''}" inputmode="numeric" aria-label="${t('supply')}"></td>`}).join('')}</tr>`;
   if(UI.exp){
     h+=`<tr class="pr">${lab(t('prod')+' '+wShort(wkId))}${vp.map(p=>p.virtual?V(p,'','prod'):`<td data-k="${esc(p.key)}"><input class="n" data-f="prod" data-k="${esc(p.key)}" value="${wk.sup[p.key]?.prod??''}" inputmode="numeric"></td>`).join('')}</tr>`;
     h+=`<tr class="pr">${lab(t('stock'))}${vp.map(p=>p.virtual?V(p,'','stock'):`<td data-k="${esc(p.key)}"><input class="n" data-f="stock" data-k="${esc(p.key)}" value="${wk.sup[p.key]?.stock??''}" inputmode="numeric"></td>`).join('')}</tr>`;
@@ -1018,8 +1034,13 @@ function applyImport(){
   res.products.forEach(p=>{if(!S.products.some(x=>x.key===p.key)){S.products.push({key:p.key,code:p.code,variety:p.variety,...prodMeta(p.code),w:64,hidden:false});newP=true;}
     wk.sup[p.key]={prod:p.prod,stock:p.stock,f6:p.f6,next:p.next};});
   wk.up={at:new Date().toISOString(),src:file+' · '+sheet,anchor:target};
+  const fc={};const anchorNum=+target.slice(-2);
+  for(const L of res.weeks){const n=parseInt(L.slice(1));if(n===anchorNum)continue;const yr=+target.slice(0,4)+(n<anchorNum?1:0);const id=yr+'-W'+String(n).padStart(2,'0');if(id<=target)continue;
+    fc[id]={};for(const p of res.products)if(p.wk&&p.wk[L]!=null)fc[id][p.key]=p.wk[L];}
+  wk.fc=fc;
   if(newP)saveProducts();
-  wk._exists=false;saveWeek(target);
+  const supPatch={};for(const p of res.products)supPatch[p.key]=wk.sup[p.key];
+  if(wk._exists)saveWeek(target,{sup:supPatch,up:wk.up,fc});else saveWeek(target);
   $('#imp').hidden=true;IMP=null;UI.week=target;saveUI();bump();renderWeeks();renderGrid();
   toast((UI.lang==='en'?'Supply updated for ':'已更新供應：')+wShort(target));
 }
@@ -1031,7 +1052,7 @@ function renderWeeks(){
   const pend=ROLE==='admin'?pendingLines().map(l=>l.d.week):[];pend.forEach(w=>{if(w>=weekAdd(sug,-2))set.add(w);});
   const list=[...set].sort();
   $('#weeks').innerHTML=list.map(w=>{const m=weekMonday(w);const e=new Date(m);e.setUTCDate(e.getUTCDate()+6);const np=pend.filter(x=>x===w).length;
-    return `<button type="button" class="wk${w===curWeek()?' cur':''}${w===sug?' sug':''}" data-w="${w}"><b>${wShort(w)}${np?`<span class="badge">${np}</span>`:''}</b><small>${m.getUTCMonth()+1}/${m.getUTCDate()}–${e.getUTCMonth()+1}/${e.getUTCDate()}</small><i>${w===sug?(UI.lang==='en'?'suggested':'建議週'):S.weeks[w]?.up?(UI.lang==='en'?'forecast':'已上傳'):'&nbsp;'}</i></button>`;}).join('');
+    return `<button type="button" class="wk${w===curWeek()?' cur':''}${w===sug?' sug':''}" data-w="${w}"><b>${wShort(w)}${np?`<span class="badge">${np}</span>`:''}</b><small>${m.getUTCMonth()+1}/${m.getUTCDate()}–${e.getUTCMonth()+1}/${e.getUTCDate()}</small><i>${w===sug?(UI.lang==='en'?'suggested':'建議週'):S.weeks[w]?.up?(UI.lang==='en'?'forecast':'已上傳'):(ROLE==='admin'&&provSrc(w)?(UI.lang==='en'?'provisional':'暫估'):'&nbsp;')}</i></button>`;}).join('');
   const cur=$('#weeks .cur');cur&&cur.scrollIntoView({inline:'center',block:'nearest'});
 }
 function gotoWeek(w){UI.week=w;saveUI();bump();renderWeeks();renderView();}
@@ -1128,9 +1149,9 @@ function reqWho(){return ROLE==='admin'?PP[UI.reqWho]:(PP[ME]||null);}
 function latestSupplyWeek(wkId){const ups=Object.keys(S.weeks).filter(k=>S.weeks[k].up).sort();if(S.weeks[wkId]?.up)return {w:wkId,field:'cur'};const prev=ups.filter(k=>k<wkId).pop();if(prev&&weekAdd(prev,1)===wkId)return {w:prev,field:'next'};return {w:ups.pop()||null,field:'cur'};}
 function reqProducts(wkId){
   if(ROLE==='req'){const ks=Object.keys(VIEWS).filter(k=>k!=='_cfg'&&VIEWS[k].products&&VIEWS[k].products.length).sort();const v=VIEWS[wkId]&&VIEWS[wkId].products?VIEWS[wkId]:(ks.length?VIEWS[ks.filter(k=>k<=wkId).pop()||ks[ks.length-1]]:null);return {list:v?v.products.map(p=>({...p,members:p.members||undefined})):FIXED.map(f=>({...f,fixed:true})),src:v?v.src:{w:null,field:'cur'}};}
-  const src=latestSupplyWeek(wkId);const wk=src.w&&S.weeks[src.w];
+  let src=latestSupplyWeek(wkId);const wkObj=S.weeks[wkId]||{_id:wkId,sup:{},up:null};const pv=wkObj.up?null:provSrc(wkId);if(pv)src={w:pv.from,field:'next'};
   const list=FIXED.map(f=>({...f,fixed:true}));
-  for(const p of S.products){if(FIXED.some(f=>f.key===p.key))continue;const s=wk?.sup?.[p.key];if(!s)continue;const v=src.field==='next'?(s.next||0):((s.prod||0)+(s.stock||0));if(v>0)list.push(p);}
+  for(const p of S.products){if(FIXED.some(f=>f.key===p.key))continue;let v;if(wkObj.up||pv){v=supplyOf(p.key,wkObj)||0;}else{const wk=src.w&&S.weeks[src.w];const s=wk?.sup?.[p.key];if(!s)continue;v=(s.prod||0)+(s.stock||0);}if(v>0)list.push(p);}
   const out=[];const seenAny=new Set();
   for(const p of list){if(ANY_CODES.includes(p.code)&&!seenAny.has(p.code)&&list.filter(x=>x.code===p.code).length>1){seenAny.add(p.code);out.push({key:p.code+'|Any',code:p.code,variety:'Any',grade:p.grade,unit:p.unit,any:true,members:list.filter(x=>x.code===p.code).map(x=>x.variety)});}out.push(p);}
   return {list:out,src};
@@ -1164,7 +1185,7 @@ function renderReq(){
    </div></div>
   <div class="panel">
    <div class="filters"><input class="q" id="rqSearch" type="search" placeholder="${t('search')}" value="${esc(RQ.search||'')}">
-    <span class="note">${!src.w?(UI.lang==='en'?'No forecast uploaded yet — fixed items only; add others at the end.':'尚未上傳預估表，先列固定品項；其他品項可在表末自行新增。'):src.field==='next'?(UI.lang==='en'?`List from ${wShort(src.w)} forecast (next week) — this week not uploaded yet`:`${wShort(wkId)} 尚未上傳，暫用 ${wShort(src.w)} 預估表的下週產出`):(UI.lang==='en'?`List from ${wShort(src.w)} forecast`:`品項來自 ${wShort(src.w)} 預估表`)}</span></div>
+    <span class="note">${!src.w?(UI.lang==='en'?'No forecast uploaded yet — fixed items only; add others at the end.':'尚未上傳預估表，先列固定品項；其他品項可在表末自行新增。'):src.field==='next'?(UI.lang==='en'?`List from ${wShort(src.w)} forecast (next week) — this week not uploaded yet`:`${wShort(wkId)} 尚未收到新預估，暫用 ${wShort(src.w)} 預估表中這一週的預估產出`):(UI.lang==='en'?`List from ${wShort(src.w)} forecast`:`品項來自 ${wShort(src.w)} 預估表`)}</span></div>
    <div class="hint">${UI.lang==='en'?'Dyed / Spray (DY/, SP/, Mix): add them into their base. Default base is White A+ — e.g. White 30 + DY/MCA 6 + DY/RBU 6 → enter 42 on W (A+) and note the breakdown. Mix boxes: list each material × boxes.':'染色／噴漆（Dyed、DY/、SP/、Spray、Mix）請併入基底數量：預設 White Base（A+），例如 White 30＋DY/MCA 6＋DY/RBU 6 → W (A+) 填 42，備註寫組成。Mix 箱請拆成各材料×箱數。PUR、LP 需求請含同基底染色花。'}</div>
    <div class="drop"><button class="btn" type="button" id="rqXls">${UI.lang==='en'?'Read order Excel':'讀取訂單 Excel'}</button><button class="btn" type="button" id="rqImg">${UI.lang==='en'?'Attach image':'附加圖片'}</button><input type="file" id="rqXlsF" accept=".xlsx,.xls" hidden><input type="file" id="rqImgF" accept="image/*" hidden><span id="rqUpMsg">${UI.lang==='en'?'Excel fills the quantities below for you to check.':'Excel 會自動填入下方數量，送出前可再修改。'}</span>${RQ.files.map(f=>`<img src="${f}" alt="附件">`).join('')}</div>
    <div class="tblx"><table class="req"><thead><tr><th>${t('code')}</th><th>${t('variety')}</th><th>${t('grade')}</th><th>${t('qty')}</th><th></th><th style="text-align:right">${t('reply')}</th></tr></thead><tbody>${rows}${extra}${free}<tr><td colspan="6" style="height:40px"><button class="btn" type="button" id="rqAddFree">${t('addFree')}</button></td></tr></tbody></table></div>
